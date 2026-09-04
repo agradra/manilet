@@ -2,14 +2,13 @@ import threading
 import time
 from dataclasses import dataclass, field
 from enum import IntEnum
-from queue import Queue, Empty
-from typing import Callable, Any
+from queue import Empty, Queue
+from typing import Any, Callable
 
 from ._singleton import Singleton
 from .time import NtpTimer
 
 __all__ = ["LogLevel", "Log", "SystemLogger"]
-
 
 
 class LogLevel(IntEnum):
@@ -27,13 +26,16 @@ class LogLevel(IntEnum):
 
 
 _LOG_NTP_TIMER = NtpTimer()
+
+
 @dataclass
 class Log:
     """
-        level: LogLevel
-        msg: str
-        time: float = UNIX time
+    level: LogLevel
+    msg: str
+    time: float = UNIX time
     """
+
     level: LogLevel
     msg: str
     time: float = field(default_factory=_LOG_NTP_TIMER.now)
@@ -55,7 +57,7 @@ class SystemLogger(metaclass=Singleton):
         self._alert_fn: Callable[[Log], Any] | None = None
 
         self._lock = threading.Lock()
-        self._init_queue: Queue[tuple[Log, bool | None]] = Queue() # 로그, is_alert
+        self._init_queue: Queue[tuple[Log, bool | None]] = Queue()  # 로그, is_alert
         self._is_init: bool = True  # 초기 버퍼링 가능 여부 플래그
         self._init_thread = threading.Thread(target=self._init_queue_check_and_emit, daemon=True)
         self._init_thread.start()

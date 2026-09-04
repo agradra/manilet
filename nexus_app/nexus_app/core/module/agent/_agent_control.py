@@ -1,14 +1,14 @@
 from textual.app import ComposeResult
-from textual.widgets import Rule, Label, Static
+from textual.widgets import Label, Rule, Static
 
-from nexus_app.core.module.base import NxRunButton, NxRadioSet, NxRadioButton
-from nexus_app.core.service.agent import AgentManager, Agent, AgentSendMode
+from nexus_app.core.module.base import NxRadioButton, NxRadioSet, NxRunButton
+from nexus_app.core.service.agent import Agent, AgentManager, AgentSendMode
 from nexus_app.core.service.log import SystemLogger
+
 from ._base import AgPane
 
 
 class AgentControlPane(AgPane):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.now_agent: Agent | None = None
@@ -16,8 +16,8 @@ class AgentControlPane(AgPane):
         self.logger = SystemLogger()
 
         # widget var
-        self.no_send_btn   = NxRadioButton("No send", callback_arg=AgentSendMode.NoSend)
-        self.send_btn      = NxRadioButton("Send", callback_arg=AgentSendMode.Send)
+        self.no_send_btn = NxRadioButton("No send", callback_arg=AgentSendMode.NoSend)
+        self.send_btn = NxRadioButton("Send", callback_arg=AgentSendMode.Send)
         self.send_test_btn = NxRadioButton("Send test", callback_arg=AgentSendMode.SendTest)
 
     # VIEW =============================================================================================================
@@ -50,10 +50,7 @@ class AgentControlPane(AgPane):
 
         yield Rule(orientation="vertical")
         yield Label("Send mode:")
-        yield NxRadioSet(
-            self.no_send_btn, self.send_btn, self.send_test_btn,
-            callback=self.send_mode_change
-        )
+        yield NxRadioSet(self.no_send_btn, self.send_btn, self.send_test_btn, callback=self.send_mode_change)
 
     # EVENT ============================================================================================================
 
@@ -91,7 +88,6 @@ class AgentControlPane(AgPane):
             self.sync_radio_button()
             for child in self.children:
                 child.disabled = False
-
 
     def sync_radio_button(self) -> None:
         """현재 에이전트 전송 모드 -> 라디오 버튼 동기화"""

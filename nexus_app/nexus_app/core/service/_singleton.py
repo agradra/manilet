@@ -1,5 +1,6 @@
 from threading import RLock
 
+
 class Singleton(type):
     _sgt_instances = {}
     _sgt_locks = {}

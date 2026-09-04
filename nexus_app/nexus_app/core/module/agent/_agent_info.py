@@ -3,15 +3,17 @@ from datetime import datetime
 import psutil
 from textual import on
 from textual.app import ComposeResult
-from textual.containers import Horizontal, Container
+from textual.containers import Container, Horizontal
 from textual.widgets import Input, Label, Rule
 
 from nexus_app.core.module.base import EmptyWidget
-from nexus_app.core.service.agent import AgentManager, Agent, AgentSendMode, AgentStatus
+from nexus_app.core.service.agent import Agent, AgentManager, AgentSendMode, AgentStatus
 from nexus_app.core.service.log import SystemLogger
+
 from ._base import AgPane
 
 _NO_INFO = "[$foreground 70%]-[/]"
+
 
 def _format_timestamp(ts: float | None) -> str:
     """Unix 타임스탬프를 읽기 쉬운 문자열로 변환"""
@@ -44,7 +46,6 @@ def _get_child_pids(parent_pid: int | None) -> list[int]:
 
 
 class AgentInfoPane(AgPane):
-
     DEFAULT_CSS = """
     AgentInfoPane {
         height: 7;
@@ -219,10 +220,14 @@ class AgentInfoPane(AgPane):
 
         # status
         match agent.status:
-            case AgentStatus.SLEEPING: self.status_lb.update(f"[$foreground 80%]{agent.status.name}[/]")
-            case AgentStatus.RUNNING: self.status_lb.update(f"[$success-lighten-2]{agent.status.name}[/]")
-            case AgentStatus.STOPPING: self.status_lb.update(f"[$warning-lighten-2]{agent.status.name}[/]")
-            case AgentStatus.STOPPED: self.status_lb.update(f"[$error-lighten-2]{agent.status.name}[/]")
+            case AgentStatus.SLEEPING:
+                self.status_lb.update(f"[$foreground 80%]{agent.status.name}[/]")
+            case AgentStatus.RUNNING:
+                self.status_lb.update(f"[$success-lighten-2]{agent.status.name}[/]")
+            case AgentStatus.STOPPING:
+                self.status_lb.update(f"[$warning-lighten-2]{agent.status.name}[/]")
+            case AgentStatus.STOPPED:
+                self.status_lb.update(f"[$error-lighten-2]{agent.status.name}[/]")
 
         # send mode
         send_mode_val = agent.send_mode

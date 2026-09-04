@@ -11,7 +11,7 @@ from textual.widgets import Label
 from nexus_app.config import TITLE, VERSION
 from nexus_app.core.module.home import PerformancePane
 from nexus_app.core.service.discord import Discord
-from nexus_app.core.service.log import SystemLogger, LogLevel
+from nexus_app.core.service.log import LogLevel, SystemLogger
 from nexus_app.core.service.time import NtpTimer, TimeZone
 
 
@@ -32,6 +32,7 @@ def _is_internet_connected(host="8.8.8.8", port=53, timeout=3) -> bool:
     except socket.error:
         # 연결 실패(네트워크 단절, 타임아웃 등)
         return False
+
 
 class NxHeader(Horizontal):
     DEFAULT_CSS = """
@@ -72,7 +73,7 @@ class NxHeader(Horizontal):
 
         self._init_status = "○"
         self._good_status = "[$success]◉[/]"
-        self._bad_status  = "[$error]◎[/]"
+        self._bad_status = "[$error]◎[/]"
         self._status_change: bool = True
         self.status_label = Label(self._init_status)
 
@@ -106,7 +107,7 @@ class NxHeader(Horizontal):
                 self.sys_logger.emit(LogLevel.WARN, "인터넷을 확인해주세요.")
                 self._status_change = False
 
-        '''
+        """
         if self.discord.is_connect:
             self.dc_connect_i = min(4, self.dc_connect_i + 1)
         else:
@@ -117,7 +118,7 @@ class NxHeader(Horizontal):
             if i < self.dc_connect_i:
                 text.append("■", style=self.SIGNAL_LEVEL_COLOR[i])
             else:
-                text.append("□")'''
+                text.append("□")"""
 
 
 class NxFooter(Widget):
@@ -178,7 +179,7 @@ class NxFooter(Widget):
             self._time_label_update()
             self.old_second = new_second
 
-    def _performance_label_update(self, cpu_ram_share: tuple[str,str]):
+    def _performance_label_update(self, cpu_ram_share: tuple[str, str]):
         cpu, ram = cpu_ram_share
 
         self.stats_label.update(

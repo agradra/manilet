@@ -3,8 +3,8 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Input, Label, Rule
 
-from nexus_app.core.module.base import Pane, NxRadioSet, NxRadioButton
-from nexus_app.core.service.discord import Discord, DMode, DChannel
+from nexus_app.core.module.base import NxRadioButton, NxRadioSet, Pane
+from nexus_app.core.service.discord import DChannel, Discord, DMode
 
 
 class _DiscordInput(Input):
@@ -30,6 +30,7 @@ class _DiscordInput(Input):
 _CONNECT_BAD_TEXT = "[$panel]▐[/][$error blink on $panel]●[/][$panel]▌[/]"
 _CONNECT_GOOD_TEXT = "[$panel]▐[/][$success blink on $panel]●[/][$panel]▌[/]"
 
+
 class DiscordPane(Pane):
     DEFAULT_CSS = """
     DiscordPane{
@@ -44,6 +45,7 @@ class DiscordPane(Pane):
     }
     
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.border_title = "Discord"
@@ -57,10 +59,10 @@ class DiscordPane(Pane):
                 NxRadioButton(
                     label=item.name.capitalize(),
                     callback_arg=item,  # DMode 객체를 통째로 넣음
-                    is_default=(item == self.discord.mode)
+                    is_default=(item == self.discord.mode),
                 )
                 for item in DMode
-            )
+            ),
         )
 
         self.status_url = self.discord.get_url(DChannel.STATUS)
@@ -86,7 +88,6 @@ class DiscordPane(Pane):
 
         yield Label("Test log channel")
         yield _DiscordInput(value=self.test_url, id="test-channel-input", classes="discord_input")
-
 
     @on(Input.Submitted, ".discord_input")
     def on_input_submitted(self, event: Input.Submitted) -> None:
@@ -117,6 +118,3 @@ class DiscordPane(Pane):
             self.connect_label.update(_CONNECT_GOOD_TEXT)
         else:
             self.connect_label.update(_CONNECT_BAD_TEXT)
-
-
-

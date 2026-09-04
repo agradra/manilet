@@ -20,9 +20,10 @@ pip install "manilet-nexuspy @ git+https://github.com/agradra/manilet.git#subdir
 ```python
 import nexuspy.log as log
 
+
 def main():
     log.info("에이전트가 정상적으로 시작되었습니다.")
-        
+
     log.error("에러가 발생하였습니다!!!")
 ```
 

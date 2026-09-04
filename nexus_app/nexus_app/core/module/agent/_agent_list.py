@@ -9,10 +9,10 @@ from textual.content import Content
 from textual.reactive import reactive
 from textual.widgets import Input, Rule, Switch
 
-from nexus_app.core.module.base import Pane, NxDataTable, NxRunButton, EmptyWidget
-from nexus_app.core.service.agent import AgentStatus, AgentManager, AgentSendMode
+from nexus_app.core.module.base import EmptyWidget, NxDataTable, NxRunButton, Pane
+from nexus_app.core.service.agent import AgentManager, AgentSendMode, AgentStatus
 from nexus_app.core.service.db import CryptoDB
-from nexus_app.core.service.log import SystemLogger, LogLevel
+from nexus_app.core.service.log import LogLevel, SystemLogger
 
 _COL_NAME = Literal["status", "name_etc"]
 _COL_WIDTH: dict[_COL_NAME, int] = {
@@ -21,29 +21,25 @@ _COL_WIDTH: dict[_COL_NAME, int] = {
 }
 _NAME_ETC_WIDTH: int = _COL_WIDTH["name_etc"]
 
-_STATUS_ICON: dict[AgentStatus, Content]  = {
-    AgentStatus.SLEEPING : Content.from_markup("[$foreground dim] ⁃ [/]"),
-    AgentStatus.RUNNING : Content.from_markup("[$success-lighten-2] ▶ [/]"),
-    AgentStatus.STOPPING : Content.from_markup("[$warning-lighten-2] ▶ [/]"),
-    AgentStatus.STOPPED : Content.from_markup("[$error-lighten-2] ◼ [/]"),
+_STATUS_ICON: dict[AgentStatus, Content] = {
+    AgentStatus.SLEEPING: Content.from_markup("[$foreground dim] ⁃ [/]"),
+    AgentStatus.RUNNING: Content.from_markup("[$success-lighten-2] ▶ [/]"),
+    AgentStatus.STOPPING: Content.from_markup("[$warning-lighten-2] ▶ [/]"),
+    AgentStatus.STOPPED: Content.from_markup("[$error-lighten-2] ◼ [/]"),
 }
 _AGENT_SEND_MODE_ICON: dict[AgentSendMode, str] = {
-    AgentSendMode.NoSend  : "[$foreground dim]Ⓧ[/]",
-    AgentSendMode.Send    : "[$foreground dim]Ⓛ[/]",
+    AgentSendMode.NoSend: "[$foreground dim]Ⓧ[/]",
+    AgentSendMode.Send: "[$foreground dim]Ⓛ[/]",
     AgentSendMode.SendTest: "[$foreground dim]Ⓣ[/]",
 }
 _NOT_FILE_EXIST_ICON: str = "[$error-lighten-3 bold blink italic]NO FILE[/]"
 
 _IGNORE_CHARS = str.maketrans("", "", " _-")
 
-_SORT_STATUS_PRIORITY = {
-    "▶": 0,
-    "◼": 1,
-    "⁃": 2
-}
+_SORT_STATUS_PRIORITY = {"▶": 0, "◼": 1, "⁃": 2}
+
 
 class AgentListPane(Pane):
-
     # 공유 데이터
     now_agent_name: str | None = reactive(None)
 
@@ -65,11 +61,13 @@ class AgentListPane(Pane):
         self.search_agent_input = Input(placeholder="Search agent", id="search_agent_input")
         self.sort_status_switch = Switch(id="sort_status_switch", value=self.is_sort_status)
 
-        self.empty_widget = EmptyWidget("No agent",id="table_container")
+        self.empty_widget = EmptyWidget("No agent", id="table_container")
         self.agent_table = NxDataTable(show_header=False, cursor_foreground_priority="renderable")
         self.agent_table.cell_padding = 0
 
-        self.agent_dir_input = Input(str(self.agent_mng.agents_dir_path or ""), placeholder="Agents directory path", id="agent_dir_input")
+        self.agent_dir_input = Input(
+            str(self.agent_mng.agents_dir_path or ""), placeholder="Agents directory path", id="agent_dir_input"
+        )
 
         # 캐쉬
         self.col_keys = {}
@@ -149,11 +147,11 @@ class AgentListPane(Pane):
         new_path: str = event.value.strip()
         old_path: str = str(self.agent_mng.agents_dir_path or "")
 
-        if new_path == old_path: # 같으면 리턴
+        if new_path == old_path:  # 같으면 리턴
             return
 
-        if not new_path: # 비었으면 리턴
-            self.sys_logger.emit(LogLevel.FAIL, f"에이전트 폴더 경로를 입력해 주세요.")
+        if not new_path:  # 비었으면 리턴
+            self.sys_logger.emit(LogLevel.FAIL, "에이전트 폴더 경로를 입력해 주세요.")
             event.input.value = old_path
             self.agent_dir_input.action_end()
             return
@@ -196,14 +194,11 @@ class AgentListPane(Pane):
                 continue
             filtered_agents.append(agent)
 
-        if self.is_sort_status: # 상태순 -> 이름순 정렬
+        if self.is_sort_status:  # 상태순 -> 이름순 정렬
             filtered_agents.sort(
-                key=lambda a: (
-                    _SORT_STATUS_PRIORITY.get(str(_STATUS_ICON.get(a.status, "").plain).strip(), 99),
-                    a.name
-                )
+                key=lambda a: (_SORT_STATUS_PRIORITY.get(str(_STATUS_ICON.get(a.status, "").plain).strip(), 99), a.name)
             )
-        else: # 이름순 정렬
+        else:  # 이름순 정렬
             filtered_agents.sort(key=lambda a: a.name)
 
         # 화면 표시
@@ -223,7 +218,7 @@ class AgentListPane(Pane):
         current_keys_set = set(self.row_keys)
         new_keys_set = set(new_row_keys)
 
-        for removed_key in (current_keys_set - new_keys_set):
+        for removed_key in current_keys_set - new_keys_set:
             self.agent_table.remove_row(removed_key)
 
         status_col_key = self.col_keys["status"]
@@ -246,7 +241,7 @@ class AgentListPane(Pane):
                 trunc = ""
                 for char in display_name:
                     cl = cell_len(char)
-                    if cur_len + cl > name_allow_width -1:
+                    if cur_len + cl > name_allow_width - 1:
                         break
                     trunc += char
                     cur_len += cl
@@ -261,6 +256,7 @@ class AgentListPane(Pane):
                 self.agent_table.update_cell(agent.name, name_etc_col_key, info_str)
 
         if self.row_keys != new_row_keys:
+
             def sort_content(cell_values):
                 if isinstance(cell_values, tuple):  # status 정렬 모드
                     status_val, name_val = cell_values
@@ -270,7 +266,7 @@ class AgentListPane(Pane):
 
                     return _SORT_STATUS_PRIORITY.get(status_plain, 99), name_plain
 
-                else: # 이름 모드
+                else:  # 이름 모드
                     name_plain = str(cell_values.plain).strip()
                     return name_plain
 
@@ -281,10 +277,8 @@ class AgentListPane(Pane):
 
             self.row_keys = new_row_keys
 
-
-        self.now_agent_name =  str(self.get_current_row_data()).strip()
+        self.now_agent_name = str(self.get_current_row_data()).strip()
         self.border_subtitle = self.now_agent_name
-
 
     def get_current_row_data(self) -> list:
         """현재 DataTable의 커서가 위치한 행의 모든 셀 데이터를 가져옵니다."""

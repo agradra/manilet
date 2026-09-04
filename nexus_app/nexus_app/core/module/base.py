@@ -1,5 +1,5 @@
 import re
-from typing import Callable, Any
+from typing import Any, Callable
 
 from rich.highlighter import Highlighter
 from rich.text import Text
@@ -9,7 +9,8 @@ from textual.binding import Binding
 from textual.containers import Container
 from textual.geometry import Size
 from textual.timer import Timer
-from textual.widgets import Button, Log as LogWidget, RadioSet, RadioButton, DataTable, Static, Label
+from textual.widgets import Button, DataTable, Label, RadioButton, RadioSet, Static
+from textual.widgets import Log as LogWidget
 
 from nexus_app.core.service.log import Log
 from nexus_app.core.service.time import NtpTimer
@@ -41,8 +42,8 @@ class Pane(Container):
         else:
             self.screen.minimize()
 
-class NxRunButton(Button):
 
+class NxRunButton(Button):
     def __init__(self, label: str, action: Callable[[], Any] | None = None, *args, **kwargs):
         """
         Args:
@@ -61,6 +62,7 @@ class NxRunButton(Button):
 
         def action_delayed() -> None:
             self.remove_class("press")
+
         self._timer = self.set_timer(0.1, action_delayed)
 
         if self.callback is not None:
@@ -72,8 +74,7 @@ class NxRunButton(Button):
 
 
 class NxRadioButton(RadioButton):
-
-    def __init__(self, label: str, callback_arg = None, is_default: bool = False, *args, **kwargs):
+    def __init__(self, label: str, callback_arg=None, is_default: bool = False, *args, **kwargs):
         """
         Args:
             label: 보여지는 이름
@@ -88,7 +89,8 @@ class NxRadioButton(RadioButton):
 
     # 내부 부모 함수 오버리아드로 가로 크기 수정
     def get_content_width(self, container: Size, viewport: Size) -> int:
-            return self._label.get_optimal_width(self.styles, 0)
+        return self._label.get_optimal_width(self.styles, 0)
+
 
 class NxRadioSet(RadioSet):
     DEFAULT_CSS = """
@@ -148,7 +150,7 @@ class NxRadioSet(RadioSet):
 
     def __init__(self, *args, callback: Callable[[Any], Any] | None = None, **kwargs):
         for arg in args:
-            if not isinstance(arg, RadioButton) or type(arg).__name__ != 'NxRadioButton':
+            if not isinstance(arg, RadioButton) or type(arg).__name__ != "NxRadioButton":
                 raise TypeError(f"NxRadioSet에는 NxRadioButton만 넣을 수 있습니다. 잘못된 타입: {type(arg).__name__}")
 
         super().__init__(*args, **kwargs)
@@ -170,10 +172,8 @@ class NxRadioSet(RadioSet):
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         self._sync_cursor()
 
-        if self.callback_fn and hasattr(event.pressed, 'callback_arg'):
+        if self.callback_fn and hasattr(event.pressed, "callback_arg"):
             self.app.call_after_refresh(self.callback_fn, event.pressed.callback_arg)
-
-
 
 
 class _LogHighlighter(Highlighter):
@@ -247,6 +247,7 @@ class _LogHighlighter(Highlighter):
                 dim_style = self.LEVEL_DIM_STYLES.get(self.last_level, "dim")
                 text.stylize(dim_style, pipe_idx, pipe_idx + 1)
 
+
 class NxLog(LogWidget):
     """Nexus Log에 최적화 된 특수한 Log 위젯"""
 
@@ -265,6 +266,7 @@ class NxLog(LogWidget):
         }
 
         """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, highlight=True)
         self.ntp_timer = NtpTimer()
@@ -291,13 +293,15 @@ class NxLog(LogWidget):
         self.write_line(formatted_msg)
         return formatted_msg
 
+
 class EmptyWidget(Static):
     """빈공간 디자인용 위젯
 
     Args:
         label: 가운데 표시할 이름 (None: 표시 안함)
 
-        """
+    """
+
     DEFAULT_CSS = """
     EmptyWidget {
         height: 1fr;
@@ -314,6 +318,7 @@ class EmptyWidget(Static):
     def compose(self) -> ComposeResult:
         if self.label is not None:
             yield Label(self.label)
+
 
 class NxDataTable(DataTable):
     DEFAULT_CSS = """
@@ -356,8 +361,7 @@ class NxDataTable(DataTable):
     
     }
     """
+
     def on_mount(self):
         self.cursor_type = "row"
         self.zebra_stripes = True
-
-    

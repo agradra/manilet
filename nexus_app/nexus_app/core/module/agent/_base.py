@@ -1,5 +1,7 @@
 from nexus_app.core.module.base import Pane
+
 from ._agent_list import AgentListPane
+
 
 class AgPane(Pane):
     """
@@ -18,10 +20,10 @@ class AgPane(Pane):
 
     def on_mount(self) -> None:
         if hasattr(super(), "on_mount"):
-            super().on_mount() # type: ignore
+            super().on_mount()  # type: ignore
 
         try:
             list_pane = self.app.query_one(AgentListPane)
-            self.watch(list_pane, "now_agent_name", self.watch_now_agent_name) # type: ignore
+            self.watch(list_pane, "now_agent_name", self.watch_now_agent_name)  # type: ignore
         except Exception:
             pass

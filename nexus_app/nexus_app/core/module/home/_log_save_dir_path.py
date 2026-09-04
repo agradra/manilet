@@ -7,7 +7,7 @@ from textual.widgets import Input
 from nexus_app.config import DEFAULT_LOG_PATH
 from nexus_app.core.module.base import Pane
 from nexus_app.core.service.db import CryptoDB
-from nexus_app.core.service.log import SystemLogger, LogLevel
+from nexus_app.core.service.log import LogLevel, SystemLogger
 
 
 class LogSaveDirPathPane(Pane):
@@ -44,7 +44,9 @@ class LogSaveDirPathPane(Pane):
 
         # 비었으면 리턴
         if not new_path:
-            self.sys_logger.emit(LogLevel.FAIL, f"로그 저장 폴더 경로를 입력해 주세요.\n( 현 저장 경로 - {old_path} )", is_alert=True)
+            self.sys_logger.emit(
+                LogLevel.FAIL, f"로그 저장 폴더 경로를 입력해 주세요.\n( 현 저장 경로 - {old_path} )", is_alert=True
+            )
             event.input.value = old_path
             self.path_input.action_end()
             return
@@ -57,9 +59,11 @@ class LogSaveDirPathPane(Pane):
             if not path_obj.exists():
                 raise FileExistsError()
         except Exception:
-            self.sys_logger.emit(LogLevel.WARN,
-                                 f"로그 저장 폴더 경로 설정을 실패하였습니다. 존재하지 않거나 잘못된 경로 입니다.\n( 현 저장 경로 - {old_path} )",
-                                 is_alert=True)
+            self.sys_logger.emit(
+                LogLevel.WARN,
+                f"로그 저장 폴더 경로 설정을 실패하였습니다. 존재하지 않거나 잘못된 경로 입니다.\n( 현 저장 경로 - {old_path} )",
+                is_alert=True,
+            )
             event.input.value = old_path
             self.path_input.action_end()
             return
@@ -69,4 +73,6 @@ class LogSaveDirPathPane(Pane):
         self.focus()
         self.app.log_save_dir_path = new_path
         self.db.update(self.DB_KEY, new_path)
-        self.sys_logger.emit(LogLevel.PASS, f"로그 저장 폴더 경로를 저장하였습니다.\n( 새 저장 경로 - {new_path} )", is_alert=True)
+        self.sys_logger.emit(
+            LogLevel.PASS, f"로그 저장 폴더 경로를 저장하였습니다.\n( 새 저장 경로 - {new_path} )", is_alert=True
+        )

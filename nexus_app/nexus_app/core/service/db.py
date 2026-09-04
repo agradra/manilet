@@ -6,7 +6,7 @@ from typing import Any
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from tinydb import TinyDB, Query
+from tinydb import Query, TinyDB
 
 from nexus_app.config import DB_PATH
 
@@ -17,6 +17,7 @@ _DEFAULT_TABLE = "_default"
 _MISSING = object()
 
 ALLOW_TYPE = (str, int, float, bool, type(None))
+
 
 class CryptoDB:
     _instances = {}  # 테이블별 객체들 저장용
@@ -30,7 +31,7 @@ class CryptoDB:
         return cls._instances[table_name]
 
     def __init__(self, table_name: str = _DEFAULT_TABLE):
-        if hasattr(self, '_initialized') and self._initialized:
+        if hasattr(self, "_initialized") and self._initialized:
             return
 
         # 비밀번호 세팅, 초기화
@@ -60,12 +61,12 @@ class CryptoDB:
 
     def _encrypt(self, value: Any) -> str:
         json_str = json.dumps(value)
-        return self._shared_cipher.encrypt(json_str.encode('utf-8')).decode('utf-8')
+        return self._shared_cipher.encrypt(json_str.encode("utf-8")).decode("utf-8")
 
     def _decrypt(self, encrypted_str: str) -> Any:
         try:
-            decrypted_bytes = self._shared_cipher.decrypt(encrypted_str.encode('utf-8'))
-            return json.loads(decrypted_bytes.decode('utf-8'))
+            decrypted_bytes = self._shared_cipher.decrypt(encrypted_str.encode("utf-8"))
+            return json.loads(decrypted_bytes.decode("utf-8"))
         except Exception as e:
             raise ValueError(f"CryptoDB[{self._table_name}] 데이터 복호화 실패: {e}")
 
@@ -94,11 +95,9 @@ class CryptoDB:
             cipher = cls._derive_cipher(password, salt)
             encrypted_canary = cipher.encrypt(_CANARY_TEXT.encode("utf-8")).decode("utf-8")
 
-            meta_table.insert({
-                "type": "auth",
-                "salt": base64.b64encode(salt).decode("utf-8"),
-                "canary": encrypted_canary
-            })
+            meta_table.insert(
+                {"type": "auth", "salt": base64.b64encode(salt).decode("utf-8"), "canary": encrypted_canary}
+            )
         else:
             # 기존 DB - Salt 불러오기 및 비밀번호 즉시 검증
             salt = base64.b64decode(meta["salt"].encode("utf-8"))
@@ -146,11 +145,7 @@ class CryptoDB:
 
         final_value = self._encrypt(value) if encrypt else value
 
-        self._table.insert({
-            'key': key,
-            'value': final_value,
-            'is_encrypted': encrypt
-        })
+        self._table.insert({"key": key, "value": final_value, "is_encrypted": encrypt})
         return value
 
     def read(self, key: str, default: Any = _MISSING) -> Any:
@@ -173,9 +168,9 @@ class CryptoDB:
             return default
 
         record = result[0]
-        if record['is_encrypted']:
-            return self._decrypt(record['value'])
-        return record['value']
+        if record["is_encrypted"]:
+            return self._decrypt(record["value"])
+        return record["value"]
 
     def update(self, key: str, value: Any) -> Any:
         """데이터베이스에 존재하는 특정 키의 값을 수정합니다.
@@ -202,13 +197,10 @@ class CryptoDB:
         if not result:
             raise KeyError(f"CryptoDB[{self._table_name}] update 실패: '{key}' 키를 찾을 수 없습니다.")
 
-        should_encrypt = result[0]['is_encrypted']
+        should_encrypt = result[0]["is_encrypted"]
         final_value = self._encrypt(value) if should_encrypt else value
 
-        self._table.update(
-            {'value': final_value, 'is_encrypted': should_encrypt},
-            self._query.key == key
-        )
+        self._table.update({"value": final_value, "is_encrypted": should_encrypt}, self._query.key == key)
         return value
 
     def delete(self, key: str, missing_ok: bool = True) -> None:

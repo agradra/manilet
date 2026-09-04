@@ -1,7 +1,7 @@
 from textual import on
-from textual.app import ComposeResult, App
-from textual.containers import Horizontal, Container, Vertical, Grid
-from textual.widgets import ContentSwitcher, Tabs, Tab, Label, Static
+from textual.app import App, ComposeResult
+from textual.containers import Container, Grid, Horizontal, Vertical
+from textual.widgets import ContentSwitcher, Label, Static, Tab, Tabs
 from textual.widgets._tabs import Underline
 
 from .module.agent import *
@@ -22,7 +22,9 @@ for class_type in [
     Tabs,
     Tab,
     Underline,
-]:class_type.ALLOW_SELECT = False
+]:
+    class_type.ALLOW_SELECT = False
+
 
 class NexusApp(App):
     CSS_PATH = "style.tcss"
@@ -43,7 +45,8 @@ class NexusApp(App):
 
     # ^q -> 앱 종료 팝업
     # f1 -> 키 모음 팝업
-    BINDINGS = [("ctrl+q", "request_quit", "Quit"),("f1","toggle_help_panel", "key")]
+    BINDINGS = [("ctrl+q", "request_quit", "Quit"), ("f1", "toggle_help_panel", "key")]
+
     def action_request_quit(self) -> None:
 
         def check_quit(should_quit: bool | None) -> None:

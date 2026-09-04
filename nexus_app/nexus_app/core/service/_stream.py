@@ -1,6 +1,6 @@
 import json
 
-from .log import LogLevel, Log
+from .log import Log, LogLevel
 
 
 def parse(stream_str: str) -> Log:

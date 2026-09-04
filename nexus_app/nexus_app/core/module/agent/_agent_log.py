@@ -14,20 +14,21 @@ from ._base import AgPane
 
 _NTP_TIMER = NtpTimer()
 
+
 def _make_safe_id(name: str) -> str:
     """Textual ID로 사용할 수 있도록 에이전트 이름을 안전하게 변환"""
     return f"agent_log_{name.encode('utf-8').hex()}"
 
-class _AgentLogContainer(Container):
 
+class _AgentLogContainer(Container):
     def __init__(self, agent, **kwargs):
-        super().__init__(id= _make_safe_id(agent.name),**kwargs)
+        super().__init__(id=_make_safe_id(agent.name), **kwargs)
         self.agent: Agent = agent
         self.nx_log = NxLog()
         self.log_n: int = 0
         self.last_log: str = ""
 
-        self._keep_running = True # 스레드 종료용 플래그
+        self._keep_running = True  # 스레드 종료용 플래그
 
     def compose(self) -> ComposeResult:
         yield self.nx_log
@@ -48,7 +49,6 @@ class _AgentLogContainer(Container):
 
 
 class AgentLogPane(AgPane):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.agent_mng = AgentManager()
@@ -58,7 +58,7 @@ class AgentLogPane(AgPane):
         self.log_switcher = ContentSwitcher(initial=None)
 
         self.old_agents_dir_path: str = self.agent_mng.agents_dir_path
-        self.agent_log_ctn_dict: dict[str, _AgentLogContainer] = {} # 에이전트 이름 : _AgentLogContainer
+        self.agent_log_ctn_dict: dict[str, _AgentLogContainer] = {}  # 에이전트 이름 : _AgentLogContainer
         self.now_agent_name: str | None = None
 
     def on_mount(self):
@@ -108,7 +108,11 @@ class AgentLogPane(AgPane):
                 if not dir_path.exists():
                     raise FileNotFoundError(f"'{self.app.log_save_dir_path}'폴더를 찾을 수 없음.")
             except Exception as e:
-                self.logger.emit(LogLevel.ERROR, f" 로그 파일 저장중 폴더 경로 관련 에러가 발생하였습니다. ({self.app.log_save_dir_path})\n→ {e}", is_alert=True)
+                self.logger.emit(
+                    LogLevel.ERROR,
+                    f" 로그 파일 저장중 폴더 경로 관련 에러가 발생하였습니다. ({self.app.log_save_dir_path})\n→ {e}",
+                    is_alert=True,
+                )
                 return
 
             log_content = "\n".join(str(line) for line in now_log_ctn.nx_log.lines)
@@ -123,9 +127,13 @@ class AgentLogPane(AgPane):
 
             try:
                 file_path.write_text(log_content, encoding="utf-8")
-                self.logger.emit(LogLevel.PASS, f" 로그 파일({file_name})이 저장되었습니다.\n→ {file_path}", is_alert=True)
+                self.logger.emit(
+                    LogLevel.PASS, f" 로그 파일({file_name})이 저장되었습니다.\n→ {file_path}", is_alert=True
+                )
             except Exception as e:
-                self.logger.emit(LogLevel.ERROR, f"'{file_name}' 저장중 에러가 발생하였습니다. ({file_path})\n→ {e}", is_alert=True)
+                self.logger.emit(
+                    LogLevel.ERROR, f"'{file_name}' 저장중 에러가 발생하였습니다. ({file_path})\n→ {e}", is_alert=True
+                )
 
     def btn_copy(self):
         now_log_ctn = self._get_now_log_ctn()

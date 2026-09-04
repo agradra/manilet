@@ -8,13 +8,12 @@ import time
 from enum import IntEnum
 from pathlib import Path
 from queue import Queue
-from typing import Literal
 
 from ._singleton import Singleton
 from ._stream import parse
 from .db import CryptoDB
 from .discord import Discord
-from .log import SystemLogger, Log, LogLevel
+from .log import Log, LogLevel, SystemLogger
 from .time import NtpTimer
 
 __all__ = ["Agent", "AgentManager", "AgentSendMode", "AgentStatus"]
@@ -22,25 +21,29 @@ __all__ = ["Agent", "AgentManager", "AgentSendMode", "AgentStatus"]
 
 class _InvalidVirtualEnvError(Exception):
     """지정된 경로가 유효한 파이썬 가상환경이 아닐 때 발생하는 예외"""
+
     pass
+
 
 class _InvalidPythonFileError(Exception):
     """지정된 경로가 유효한 파이썬 파일이 아닐 때 발생하는 예외"""
+
     pass
+
 
 def _validate_dir(path: str | Path) -> Path:
     """
-        주어진 경로가 존재하는 폴더인지 확인하고 아닐 시 에러를 발생시킵니다.
+    주어진 경로가 존재하는 폴더인지 확인하고 아닐 시 에러를 발생시킵니다.
 
-        Args:
-            path: 검증할 폴더 경로
+    Args:
+        path: 검증할 폴더 경로
 
-        Raises:
-            FileNotFoundError: 존재하지 않을 경우
-            NotADirectoryError: 폴더가 아닐 경우
+    Raises:
+        FileNotFoundError: 존재하지 않을 경우
+        NotADirectoryError: 폴더가 아닐 경우
 
-        Returns:
-            path: Path(path)
+    Returns:
+        path: Path(path)
     """
     dir_path = Path(path) if isinstance(path, str) else path
 
@@ -51,6 +54,7 @@ def _validate_dir(path: str | Path) -> Path:
         raise NotADirectoryError
 
     return dir_path
+
 
 def _validate_venv(path: str | Path) -> Path:
     """
@@ -71,7 +75,7 @@ def _validate_venv(path: str | Path) -> Path:
 
     venv_path = _validate_dir(path)
 
-    if os.name == 'nt':  # Windows
+    if os.name == "nt":  # Windows
         python_exe = venv_path / "Scripts" / "python.exe"
     else:  # Linux / macOS
         python_exe = venv_path / "bin" / "python"
@@ -105,11 +109,13 @@ def _validate_py(path: str | Path) -> Path:
     if not py_path.exists() or not py_path.is_absolute():
         raise FileNotFoundError
 
-    if py_path.is_file() and py_path.suffix == '.py':
-            return py_path
+    if py_path.is_file() and py_path.suffix == ".py":
+        return py_path
     raise _InvalidPythonFileError
 
+
 # ======================================================================================================================
+
 
 class AgentStatus(IntEnum):
     """에이전트 상태 Enum 클라스
@@ -120,23 +126,26 @@ class AgentStatus(IntEnum):
         STOPPING: 정지중
         STOPPED: 정지
     """
+
     SLEEPING = 0
-    RUNNING  = 1
+    RUNNING = 1
     STOPPING = 2
-    STOPPED  = 3
+    STOPPED = 3
 
 
 class AgentSendMode(IntEnum):
     """에이전트 로그 전송 모드 Enum 클라스
 
-        Attributes:
-            NoSend: 미전송
-            Send: 정상
-            SendTest: 테스트 전송
-        """
-    NoSend   = 0
-    Send     = 1
+    Attributes:
+        NoSend: 미전송
+        Send: 정상
+        SendTest: 테스트 전송
+    """
+
+    NoSend = 0
+    Send = 1
     SendTest = 2
+
 
 class Agent:
     """에이전트 데이터클라스
@@ -144,6 +153,7 @@ class Agent:
     Attributes:
 
     """
+
     _logger = SystemLogger()
     _ntp_timer = NtpTimer()
     _discord = Discord()
@@ -197,7 +207,7 @@ class Agent:
     # ---
 
     @property
-    def venv_path(self) -> Path | None :
+    def venv_path(self) -> Path | None:
         return self._venv_path
 
     @property
@@ -209,7 +219,6 @@ class Agent:
         return self._pid
 
     # ---
-
 
     @property
     def is_file_exist(self) -> bool:
@@ -242,7 +251,9 @@ class Agent:
             현재 가상환경 경로 (설정되어 있지 않다면 None)
         """
         if self.status in (AgentStatus.RUNNING, AgentStatus.STOPPING):
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트는 현재 작동중이므로 가상환경을 변경할 수 없습니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"'{self._name}'에이전트는 현재 작동중이므로 가상환경을 변경할 수 없습니다."
+            )
             return self._venv_path
 
         try:
@@ -252,10 +263,15 @@ class Agent:
             self._logger.emit(LogLevel.PASS, f"'{self._name}'의 가상환경을 변경하였습니다.")
 
         except FileNotFoundError:
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'의 가상환경을 변경할 수 없습니다.'{path}' 경로는 존재하지 않는 경로입니다.")
+            self._logger.emit(
+                LogLevel.FAIL,
+                f"'{self._name}'의 가상환경을 변경할 수 없습니다.'{path}' 경로는 존재하지 않는 경로입니다.",
+            )
 
         except (NotADirectoryError, _InvalidVirtualEnvError):
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'의 가상환경을 변경할 수 없습니다.'{path}' 경로는 가상환경이 아닙니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"'{self._name}'의 가상환경을 변경할 수 없습니다.'{path}' 경로는 가상환경이 아닙니다."
+            )
 
         except Exception as e:
             self._logger.emit(LogLevel.ERROR, f"에이전트({self._name}) 가상환경 변경 중 알 수 없는 에러 발생 - {e}")
@@ -303,40 +319,61 @@ class Agent:
             _validate_py(self._file_path)
         except FileNotFoundError:
             self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트의 실행 파일을 찾을 수 없습니다.")
-            with self._lock: self._file_path = None
+            with self._lock:
+                self._file_path = None
             return
 
         except _InvalidPythonFileError:
             self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트의 실행 파일이 .py파일이 아닙니다.")
-            with self._lock: self._file_path = None
+            with self._lock:
+                self._file_path = None
             return
 
         except Exception as e:
-            self._logger.emit(LogLevel.ERROR, f"'{self._name}'에이전트 실행 실패: '{self._name}'실행 파일 증명 중 알 수 없는 에러 발생 - {e}", is_alert=True)
-            with self._lock: self._file_path = None
+            self._logger.emit(
+                LogLevel.ERROR,
+                f"'{self._name}'에이전트 실행 실패: '{self._name}'실행 파일 증명 중 알 수 없는 에러 발생 - {e}",
+                is_alert=True,
+            )
+            with self._lock:
+                self._file_path = None
             return
 
         # 가상환경 증명
         if self._venv_path is None:
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트의 가상환경 경로가 설정되어있지 않아 실행할 수 없습니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"'{self._name}'에이전트의 가상환경 경로가 설정되어있지 않아 실행할 수 없습니다."
+            )
             return
 
         try:
             _validate_venv(self._venv_path)
 
         except FileNotFoundError:
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트의 가상환경 경로 상에 실제 가상환경이 존재하지 않습니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"'{self._name}'에이전트의 가상환경 경로 상에 실제 가상환경이 존재하지 않습니다."
+            )
             return
         except (NotADirectoryError, _InvalidVirtualEnvError):
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트의 가상환경 경로 상에 존재하는 파일은 가상환경이 아닙니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"'{self._name}'에이전트의 가상환경 경로 상에 존재하는 파일은 가상환경이 아닙니다."
+            )
             return
         except Exception as e:
-            self._logger.emit(LogLevel.ERROR, f"'{self._name}'에이전트 실행 실패: 가상환경 증명 중 알 수 없는 에러 발생 - {e}", is_alert=True)
+            self._logger.emit(
+                LogLevel.ERROR,
+                f"'{self._name}'에이전트 실행 실패: 가상환경 증명 중 알 수 없는 에러 발생 - {e}",
+                is_alert=True,
+            )
             return
 
         # 실행
         try:
-            cmd = [str(self._venv_path / ("Scripts/python.exe" if os.name == 'nt' else "bin/python")), '-u', str(self._file_path)]
+            cmd = [
+                str(self._venv_path / ("Scripts/python.exe" if os.name == "nt" else "bin/python")),
+                "-u",
+                str(self._file_path),
+            ]
 
             process = subprocess.Popen(
                 cmd,
@@ -344,7 +381,7 @@ class Agent:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == 'nt' else 0
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0,
             )
 
             with self._lock:
@@ -362,7 +399,7 @@ class Agent:
                     self._logs.put_nowait(log_item)
                     if self._send_mode != AgentSendMode.NoSend:
                         try:
-                            Agent._discord.send_log(self._name, log_item, self._send_mode == AgentSendMode.SendTest )
+                            Agent._discord.send_log(self._name, log_item, self._send_mode == AgentSendMode.SendTest)
                         except Exception as discord_err:
                             self._logger.emit(LogLevel.WARN, f"'{self._name}' 디스코드 전송 실패: {discord_err}")
 
@@ -407,13 +444,15 @@ class Agent:
                     if self._status == AgentStatus.RUNNING and exit_code != 0:
                         self._logger.emit(
                             LogLevel.WARN,
-                            f"'{self._name}'에이전트의 비정상 종료가 감지되었습니다. (exit code: {exit_code})"
+                            f"'{self._name}'에이전트의 비정상 종료가 감지되었습니다. (exit code: {exit_code})",
                         )
 
                     self._logs.put_nowait(Log(LogLevel.DEBUG, f"'{self._name}' 에이전트 정지 ({exit_code})"))
 
                 except Exception as e:
-                    self._logs.put_nowait(Log(LogLevel.ERROR, f"'{self._name}' 에이전트 관리 쓰레드 내부 에러 발생 - {e}"))
+                    self._logs.put_nowait(
+                        Log(LogLevel.ERROR, f"'{self._name}' 에이전트 관리 쓰레드 내부 에러 발생 - {e}")
+                    )
 
                 finally:
                     with self._lock:
@@ -427,19 +466,27 @@ class Agent:
             self._logs.put_nowait(Log(LogLevel.DEBUG, f"'{self._name}' 에이전트 작동 시작"))
 
         except Exception as e:
-            self._logger.emit(LogLevel.ERROR, f"'{self._name}'에이전트 실행 실패: 프로세스 생성 및 실행 중 에러 발생 - {e}")
+            self._logger.emit(
+                LogLevel.ERROR, f"'{self._name}'에이전트 실행 실패: 프로세스 생성 및 실행 중 에러 발생 - {e}"
+            )
 
     def stop(self) -> None:
         """에이전트 종료"""
 
         # 실행 상태 검증
         if self._status in (AgentStatus.STOPPED, AgentStatus.SLEEPING, AgentStatus.STOPPING):
-            self._logger.emit(LogLevel.FAIL, f"'{self._name}'에이전트는 이미 중지했거나 정지 중인 상태이므로 정지 신호를 보낼 수 없습니다.")
+            self._logger.emit(
+                LogLevel.FAIL,
+                f"'{self._name}'에이전트는 이미 중지했거나 정지 중인 상태이므로 정지 신호를 보낼 수 없습니다.",
+            )
             return
 
         # 프로세스 객체 유무 검증
         if self._process is None or self._process.poll() is not None:
-            self._logger.emit(LogLevel.WARN, f"'{self._name}'에이전트는 실행 중인 상태값이나 내부 프로세스가 없거나 죽어있습니다. 에이전트를 정지 처리합니다.")
+            self._logger.emit(
+                LogLevel.WARN,
+                f"'{self._name}'에이전트는 실행 중인 상태값이나 내부 프로세스가 없거나 죽어있습니다. 에이전트를 정지 처리합니다.",
+            )
             with self._lock:
                 self._status = AgentStatus.STOPPED
                 self._end_time = Agent._ntp_timer.now()
@@ -448,12 +495,13 @@ class Agent:
             return
 
         # 정지 시도
-        with self._lock: self._status = AgentStatus.STOPPING
+        with self._lock:
+            self._status = AgentStatus.STOPPING
 
         def kill_and_wait():
             if self._process:
                 try:
-                    if os.name == 'nt':  # 원도우: 종료 요청 (SIGTERM / CTRL_BREAK)
+                    if os.name == "nt":  # 원도우: 종료 요청 (SIGTERM / CTRL_BREAK)
                         self._process.send_signal(signal.CTRL_BREAK_EVENT)
                     else:
                         self._process.terminate()  # Linux/Mac: SIGTERM 전송
@@ -461,19 +509,25 @@ class Agent:
                     self._process.wait(timeout=3.0)
 
                 except subprocess.TimeoutExpired:
-                    self._logger.emit(LogLevel.WARN, f"'{self._name}'에이전트가 응답하지 않아 강제 종료(SIGKILL)를 시도합니다.")
+                    self._logger.emit(
+                        LogLevel.WARN, f"'{self._name}'에이전트가 응답하지 않아 강제 종료(SIGKILL)를 시도합니다."
+                    )
                     try:
-
                         self._process.kill()  # 3초 지나도 안 꺼지면 하드 강제 종료 (SIGKILL)
                         self._process.wait(timeout=2.0)  # 좀비 프로세스 방지를 위한 완전 수거
                     except Exception as e:
-                        self._logger.emit(LogLevel.ERROR, f"'{self._name}'에이전트 강제 종료 실패하였습니다. 프로세스(pid:{self._pid})를 직접 확인하여 조치해주십시오 - {e}")
+                        self._logger.emit(
+                            LogLevel.ERROR,
+                            f"'{self._name}'에이전트 강제 종료 실패하였습니다. 프로세스(pid:{self._pid})를 직접 확인하여 조치해주십시오 - {e}",
+                        )
 
                 except Exception as e:
-                    self._logger.emit(LogLevel.ERROR, f"'{self._name}'에이전트(pid:{self._pid}) 정지 시도 중 예상치 못한 오류 발생 - {e}")
+                    self._logger.emit(
+                        LogLevel.ERROR,
+                        f"'{self._name}'에이전트(pid:{self._pid}) 정지 시도 중 예상치 못한 오류 발생 - {e}",
+                    )
 
         threading.Thread(target=kill_and_wait, daemon=True).start()
-
 
     def reset(self) -> None:
         """에이전트 초기화"""
@@ -496,7 +550,6 @@ class Agent:
         except queue.Empty:
             return None
 
-
     def check_file(self) -> bool:
         """에이전트 실행 파일이 실제 존재하는지 확인하고 존재 여부 업데이트 및 반환"""
 
@@ -507,17 +560,17 @@ class Agent:
             return True
 
         except Exception:
-            with self._lock: self._file_path = None
+            with self._lock:
+                self._file_path = None
             return False
 
 
 # ======================================================================================================================
 # ======================================================================================================================
 
-class AgentManager(metaclass=Singleton):
-    """에이전트를 통합 관리하고 여러 편의 기능을 지원하는 싱글톤 클라스
 
-    """
+class AgentManager(metaclass=Singleton):
+    """에이전트를 통합 관리하고 여러 편의 기능을 지원하는 싱글톤 클라스"""
 
     _discord = Discord()
 
@@ -562,18 +615,20 @@ class AgentManager(metaclass=Singleton):
     def set_agents_dir(self, path: str):
         """에이전트 폴더 경로를 변경 및 설정합니다.
 
-            Args:
-                path: 설정할 에이전트 폴더 경로
+        Args:
+            path: 설정할 에이전트 폴더 경로
         """
         if self._agents_dir_path == path.strip():
             return
 
         for agent in self._agent_dict.values():
             if agent.status is not AgentStatus.SLEEPING:
-                self._logger.emit(LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다. 아직 초기화 되지 않은 에이전트({agent.name})가 남아있습니다.")
+                self._logger.emit(
+                    LogLevel.FAIL,
+                    f"에이전트용 폴더 경로를 변경할 수 없습니다. 아직 초기화 되지 않은 에이전트({agent.name})가 남아있습니다.",
+                )
                 return
         try:
-
             dir_path = str(_validate_dir(path.strip()))
 
             with self._lock:
@@ -583,15 +638,21 @@ class AgentManager(metaclass=Singleton):
 
             is_pass = self._reload_agents()
             if is_pass:
-                self._logger.emit(LogLevel.PASS, f"에이전트 폴더 경로를 변경하였습니다.")
+                self._logger.emit(LogLevel.PASS, "에이전트 폴더 경로를 변경하였습니다.")
             else:
-                self._logger.emit(LogLevel.FAIL, f"에이전트 폴더 경로를 변경하였으니 파일 조회 중 오류가 발생하였습니다.")
+                self._logger.emit(
+                    LogLevel.FAIL, "에이전트 폴더 경로를 변경하였으니 파일 조회 중 오류가 발생하였습니다."
+                )
 
         except FileNotFoundError:
-            self._logger.emit(LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다.'{path}' 경로는 존재하지 않는 경로입니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다.'{path}' 경로는 존재하지 않는 경로입니다."
+            )
 
         except NotADirectoryError:
-            self._logger.emit(LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다.'{path}' 경로는 폴더가 아닙니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다.'{path}' 경로는 폴더가 아닙니다."
+            )
 
         except Exception as e:
             self._logger.emit(LogLevel.ERROR, f"에이전트용 폴더 경로 변경 중 알 수 없는 에러 발생 - {e}")
@@ -599,8 +660,8 @@ class AgentManager(metaclass=Singleton):
     def set_default_venv(self, path: str):
         """기본 가상환경 경로를 변경합니다.
 
-            Args:
-                path: 설정할 가상환경 경로
+        Args:
+            path: 설정할 가상환경 경로
         """
         try:
             venv_path = str(_validate_venv(path.strip()))
@@ -608,13 +669,18 @@ class AgentManager(metaclass=Singleton):
             with self._lock:
                 self._default_venv_path = venv_path
 
-            self._logger.emit(LogLevel.PASS, f"에이전트 기본 가상환경 경로를 변경하였습니다.")
+            self._logger.emit(LogLevel.PASS, "에이전트 기본 가상환경 경로를 변경하였습니다.")
 
         except FileNotFoundError:
-            self._logger.emit(LogLevel.FAIL, f"에이전트 기본 가상환경 경로를 변경할 수 없습니다.'{path}' 경로는 존재하지 않는 경로입니다.")
+            self._logger.emit(
+                LogLevel.FAIL,
+                f"에이전트 기본 가상환경 경로를 변경할 수 없습니다.'{path}' 경로는 존재하지 않는 경로입니다.",
+            )
 
         except (NotADirectoryError, _InvalidVirtualEnvError):
-            self._logger.emit(LogLevel.FAIL, f"에이전트 기본 가상환경 경로를 변경할 수 없습니다.'{path}' 경로는 가상환경이 아닙니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"에이전트 기본 가상환경 경로를 변경할 수 없습니다.'{path}' 경로는 가상환경이 아닙니다."
+            )
 
         except Exception as e:
             self._logger.emit(LogLevel.ERROR, f"에이전트 기본 가상환경 경로 변경 중 알 수 없는 에러 발생 - {e}")
@@ -628,21 +694,27 @@ class AgentManager(metaclass=Singleton):
             only_none_venv: 가상환경이 없는 에이전트만 적용할지 여부
         """
         if self._default_venv_path == "":
-            self._logger.emit(LogLevel.FAIL, f"에이전트들에게 적용할 가상환경 경로가 없습니다.")
+            self._logger.emit(LogLevel.FAIL, "에이전트들에게 적용할 가상환경 경로가 없습니다.")
             return
 
         if not self._agent_dict:
-            self._logger.emit(LogLevel.FAIL, f"가상환경을 적용할 에이전트가 없습니다.")
+            self._logger.emit(LogLevel.FAIL, "가상환경을 적용할 에이전트가 없습니다.")
             return
 
         try:
             apply_venv_path = _validate_venv(self._default_venv_path)
 
         except FileNotFoundError:
-            self._logger.emit(LogLevel.FAIL, f"에이전트들에 가상환경 경로를 적용할 수 없습니다.'{self._default_venv_path}' 경로는 존재하지 않는 경로입니다.")
+            self._logger.emit(
+                LogLevel.FAIL,
+                f"에이전트들에 가상환경 경로를 적용할 수 없습니다.'{self._default_venv_path}' 경로는 존재하지 않는 경로입니다.",
+            )
             return
         except (NotADirectoryError, _InvalidVirtualEnvError):
-            self._logger.emit(LogLevel.FAIL, f"에이전트들에 가상환경 경로를 적용할 수 없습니다.'{self._default_venv_path}' 경로는 가상환경이 아닙니다.")
+            self._logger.emit(
+                LogLevel.FAIL,
+                f"에이전트들에 가상환경 경로를 적용할 수 없습니다.'{self._default_venv_path}' 경로는 가상환경이 아닙니다.",
+            )
             return
         except Exception as e:
             self._logger.emit(LogLevel.ERROR, f"에이전트들 가상환경 경로 변경 중 알 수 없는 에러 발생 - {e}")
@@ -656,9 +728,15 @@ class AgentManager(metaclass=Singleton):
                     applied_count += 1
 
             if applied_count > 0:
-                self._logger.emit(LogLevel.PASS, f"{applied_count}개의 에이전트(미설정/정지 상태)에 기본 가상환경을 적용했습니다.")
+                self._logger.emit(
+                    LogLevel.PASS, f"{applied_count}개의 에이전트(미설정/정지 상태)에 기본 가상환경을 적용했습니다."
+                )
             else:
-                self._logger.emit(LogLevel.INFO, f"기본 가상환경을 적용할 에이전트가 없습니다. (모두 설정되어 있거나 작동 중)", is_alert=True)
+                self._logger.emit(
+                    LogLevel.INFO,
+                    "기본 가상환경을 적용할 에이전트가 없습니다. (모두 설정되어 있거나 작동 중)",
+                    is_alert=True,
+                )
 
         else:
             applied_count = 0
@@ -668,19 +746,22 @@ class AgentManager(metaclass=Singleton):
                     applied_count += 1
 
             if applied_count > 0:
-                self._logger.emit(LogLevel.PASS, f"{applied_count}개의 에이전트(정지 상태)에 기본 가상환경을 일괄 적용했습니다.")
+                self._logger.emit(
+                    LogLevel.PASS, f"{applied_count}개의 에이전트(정지 상태)에 기본 가상환경을 일괄 적용했습니다."
+                )
             else:
-                self._logger.emit(LogLevel.INFO, f"기본 가상환경을 적용할 에이전트가 없습니다. (모두 작동 중)", is_alert=True)
-
+                self._logger.emit(
+                    LogLevel.INFO, "기본 가상환경을 적용할 에이전트가 없습니다. (모두 작동 중)", is_alert=True
+                )
 
     def reload_agents(self):
         """에이전트 폴더에서 파이썬 파일을 불러화 에이전트로 변환 및 저장합니다."""
         if self._agents_dir_path == "":
-            self._logger.emit(LogLevel.FAIL, f"아직 에이전트용 폴더가 설정되지 않았습니다.")
+            self._logger.emit(LogLevel.FAIL, "아직 에이전트용 폴더가 설정되지 않았습니다.")
 
         is_pass = self._reload_agents()
         if is_pass:
-            self._logger.emit(LogLevel.PASS, f"에이전트 목록을 최신 상태로 갱신하였습니다.")
+            self._logger.emit(LogLevel.PASS, "에이전트 목록을 최신 상태로 갱신하였습니다.")
 
     def _reload_agents(self) -> bool:
         """reload_agents 메소드의 실제 로직, 성공 시 True 반환"""
@@ -693,10 +774,15 @@ class AgentManager(metaclass=Singleton):
             agents_dir = _validate_dir(self._agents_dir_path)
 
         except FileNotFoundError:
-            self._logger.emit(LogLevel.FAIL, f"현재 에이전트용 폴더를 읽을 수 없습니다. '{self._agents_dir_path}'는 존재하지 않는 경로입니다.")
+            self._logger.emit(
+                LogLevel.FAIL,
+                f"현재 에이전트용 폴더를 읽을 수 없습니다. '{self._agents_dir_path}'는 존재하지 않는 경로입니다.",
+            )
             return False
         except NotADirectoryError:
-            self._logger.emit(LogLevel.FAIL, f"현재 에이전트용 폴더를 읽을 수 없습니다. '{self._agents_dir_path}'는 폴더가 아닙니다.")
+            self._logger.emit(
+                LogLevel.FAIL, f"현재 에이전트용 폴더를 읽을 수 없습니다. '{self._agents_dir_path}'는 폴더가 아닙니다."
+            )
             return False
         except Exception as e:
             self._logger.emit(LogLevel.ERROR, f"에이전트용 폴더 읽는 중 알 수 없는 에러 발생 - {e}")
@@ -785,7 +871,7 @@ class AgentManager(metaclass=Singleton):
         pid_map = {}
         with self._lock:
             for name, agent in self._agent_dict.items():
-                if agent.status == AgentStatus.RUNNING: # 작동 상태
+                if agent.status == AgentStatus.RUNNING:  # 작동 상태
                     pid_map[agent.pid] = name
 
         return pid_map
@@ -830,7 +916,7 @@ class AgentManager(metaclass=Singleton):
     _STATUS_ICON: dict[AgentStatus, str] = {
         AgentStatus.RUNNING: "▶️",
         AgentStatus.STOPPING: "▶️",
-        AgentStatus.STOPPED: "⏹️"
+        AgentStatus.STOPPED: "⏹️",
     }
 
     def _build_get_discord_status_md(self) -> str:
@@ -842,4 +928,3 @@ class AgentManager(metaclass=Singleton):
             return payload
         except Exception:
             return "Error"
-

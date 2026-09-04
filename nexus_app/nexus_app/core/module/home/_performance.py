@@ -9,60 +9,75 @@ from textual.reactive import reactive
 from textual.widgets import Rule
 from textual.widgets._data_table import ColumnKey
 
-from nexus_app.core.module.base import Pane, NxRadioSet, NxRadioButton, NxDataTable
+from nexus_app.core.module.base import NxDataTable, NxRadioButton, NxRadioSet, Pane
 from nexus_app.core.service.agent import AgentManager
 from nexus_app.core.service.db import CryptoDB
 
-_SYSTEM_SHELL_NAMES = frozenset({ # 소문자로 통일
-    # Windows
-    "cmd.exe",
-    "powershell.exe",
-    "pwsh.exe",
-    "explorer.exe",
-    "services.exe",
-    "conhost.exe",
-    "svchost.exe",
-    "windowsterminal.exe",
-    "mintty.exe",
-    "wsl.exe",
-
-    # Linux, macOS
-    "bash",
-    "zsh",
-    "sh",
-    "fish",
-    "dash",
-    "ksh",
-    "csh",
-    "tcsh",
-
-    # 터미널 멀티플렉서, 가상 환경
-    "tmux", "tmux: server", "tmux: client", "screen", "zellij", "byobu",
-    # OS 시스템 데몬, 원격 접속
-    "systemd", "init", "sshd", "cron", "crond", "launchd",
-    # GUI 터미널 에뮬레이터 (리눅스 데스크톱 환경)
-    "gnome-terminal-server", "xterm", "konsole", "alacritty", "kitty", "wezterm-gui",
-})
+_SYSTEM_SHELL_NAMES = frozenset(
+    {  # 소문자로 통일
+        # Windows
+        "cmd.exe",
+        "powershell.exe",
+        "pwsh.exe",
+        "explorer.exe",
+        "services.exe",
+        "conhost.exe",
+        "svchost.exe",
+        "windowsterminal.exe",
+        "mintty.exe",
+        "wsl.exe",
+        # Linux, macOS
+        "bash",
+        "zsh",
+        "sh",
+        "fish",
+        "dash",
+        "ksh",
+        "csh",
+        "tcsh",
+        # 터미널 멀티플렉서, 가상 환경
+        "tmux",
+        "tmux: server",
+        "tmux: client",
+        "screen",
+        "zellij",
+        "byobu",
+        # OS 시스템 데몬, 원격 접속
+        "systemd",
+        "init",
+        "sshd",
+        "cron",
+        "crond",
+        "launchd",
+        # GUI 터미널 에뮬레이터 (리눅스 데스크톱 환경)
+        "gnome-terminal-server",
+        "xterm",
+        "konsole",
+        "alacritty",
+        "kitty",
+        "wezterm-gui",
+    }
+)
 
 # 컬럼 설정
 _COL_NAME = Literal["Gen", "PID", "Name", "CPU", "RAM", "Thr"]
 _COL_WIDTH: dict[_COL_NAME, int | None] = {
     "Gen": 9,  # [n]Parent , [0]Self, [-n]Child
     "PID": 7,  # 1234567
-    "CPU": 10, # ↓ CPU (16)
-    "RAM": 10, # 999.99 MiB
+    "CPU": 10,  # ↓ CPU (16)
+    "RAM": 10,  # 999.99 MiB
     "Thr": 5,  # ↓ Thr
     "Name": None,
-} # 반복문 시 _COL_WIDTH 순서를 사용 ex) for name, width in _COL_WIDTH.items():
+}  # 반복문 시 _COL_WIDTH 순서를 사용 ex) for name, width in _COL_WIDTH.items():
 
 # 컴퓨터 환경값
-_OS_NAME = f"{"macOS" if platform.system() == "Darwin" else platform.system()} {platform.release()}"
+_OS_NAME = f"{'macOS' if platform.system() == 'Darwin' else platform.system()} {platform.release()}"
 _CPU_COUNT = psutil.cpu_count(logical=True)
 _RAM_TOTAL = psutil.virtual_memory().total
 
-class PerformancePane(Pane):
 
-    cpu_ram_share: tuple[str,str] = reactive(("", "")) #NxFooter 공유
+class PerformancePane(Pane):
+    cpu_ram_share: tuple[str, str] = reactive(("", ""))  # NxFooter 공유
     agent_mng = AgentManager()
 
     def __init__(self, **kwargs):
@@ -79,18 +94,18 @@ class PerformancePane(Pane):
 
         # 프로세스 테이블용
         self.tick_n = 0
-        self.col_cache: dict[_COL_NAME, ColumnKey] = {} # 헤더
+        self.col_cache: dict[_COL_NAME, ColumnKey] = {}  # 헤더
 
         self.current_process: psutil.Process = psutil.Process()
-        self.parent_proc_cache: list[psutil.Process] = [] # [현재 프로세스 -> 부모 프로세스]
-        self.child_proc_cache: dict[int, tuple[int, str, psutil.Process]] = {} # pid : (깊이, 이름, proc)
+        self.parent_proc_cache: list[psutil.Process] = []  # [현재 프로세스 -> 부모 프로세스]
+        self.child_proc_cache: dict[int, tuple[int, str, psutil.Process]] = {}  # pid : (깊이, 이름, proc)
 
         self.assign_parent_process()
         self.assign_child_process()
 
         # 위젯 변수
         self.process_table = NxDataTable(show_cursor=False)
-        #self.overview_static = Static() #TODO 다음 버전
+        # self.overview_static = Static() #TODO 다음 버전
 
     # === view =======================================================================
     DEFAULT_CSS = """
@@ -106,18 +121,22 @@ class PerformancePane(Pane):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="performance-button-bar"):
-            yield NxRadioSet(NxRadioButton("All-Core", False, is_default=(not self.cpu_per_core)),
-                             NxRadioButton("Per-Core", True, is_default=self.cpu_per_core),
-                             callback=self.change_cpu_mode)
+            yield NxRadioSet(
+                NxRadioButton("All-Core", False, is_default=(not self.cpu_per_core)),
+                NxRadioButton("Per-Core", True, is_default=self.cpu_per_core),
+                callback=self.change_cpu_mode,
+            )
 
             yield Rule(orientation="vertical")
 
-            yield NxRadioSet(NxRadioButton("RAM Size", False, is_default=(not self.ram_as_percent)),
-                             NxRadioButton("RAM Usage", True, is_default=self.ram_as_percent),
-                             callback=self.change_ram_mode)
+            yield NxRadioSet(
+                NxRadioButton("RAM Size", False, is_default=(not self.ram_as_percent)),
+                NxRadioButton("RAM Usage", True, is_default=self.ram_as_percent),
+                callback=self.change_ram_mode,
+            )
         yield Rule()
-        #yield self.overview_static # TODO: 다음 버전에 업그레이드
-        #yield Rule()
+        # yield self.overview_static # TODO: 다음 버전에 업그레이드
+        # yield Rule()
         yield self.process_table
 
     # TODO: gen_overview() 다음 버전에 추가
@@ -137,7 +156,6 @@ class PerformancePane(Pane):
                         cpu_temps = f"{current_temp:.1f} °C"
                 except (IndexError, AttributeError):
                     pass
-
 
         design = f"""System
 ├╴os: {self.os_str}
@@ -165,25 +183,27 @@ class PerformancePane(Pane):
         self.border_subtitle = "1000ms"
 
         for name, width in _COL_WIDTH.items():
-            self.col_cache[name] = self.process_table.add_column( # type: ignore
-                label=self.gen_col_label(name), key=name, width=width # type: ignore
+            self.col_cache[name] = self.process_table.add_column(  # type: ignore
+                label=self.gen_col_label(name),
+                key=name,
+                width=width,  # type: ignore
             )
 
         self.tick()
         self.set_interval(1.0, self.tick)
 
-
     def gen_col_label(self, col_name: _COL_NAME) -> str:
         if col_name == "CPU":
             col_label = "CPU (1)" if self.cpu_per_core else f"CPU ({_CPU_COUNT or 'N/A'})"
 
-        #elif col_name == "RAM":
-            #col_label = "RAM (%)" if self.ram_as_percent else "RAM (MiB)"
+        # elif col_name == "RAM":
+        # col_label = "RAM (%)" if self.ram_as_percent else "RAM (MiB)"
 
-        else: col_label = col_name
+        else:
+            col_label = col_name
 
         if col_name == self.sort_col:
-            return f"[bold]{"↑" if self.sort_reverse else "↓"} {col_label}[/]"
+            return f"[bold]{'↑' if self.sort_reverse else '↓'} {col_label}[/]"
         else:
             return f"{col_label}"
 
@@ -204,17 +224,17 @@ class PerformancePane(Pane):
 
     def on_data_table_header_selected(self, event: NxDataTable.HeaderSelected) -> None:
         """컬럼 헤더 클릭 시"""
-        event_col: _COL_NAME = event.column_key.value # type: ignore
+        event_col: _COL_NAME = event.column_key.value  # type: ignore
 
-        if self.sort_col == event_col: # 같은 버튼 -> 정렬 순서 변경
+        if self.sort_col == event_col:  # 같은 버튼 -> 정렬 순서 변경
             self.sort_reverse = not self.sort_reverse
             self.db.update("sort_reverse", self.sort_reverse)
-        else: # 다른 버튼 -> 정렬 기준 변경
+        else:  # 다른 버튼 -> 정렬 기준 변경
             self.sort_col = event_col
             self.db.update("sort_col", self.sort_col)
 
         for name, col_key in self.col_cache.items():
-            self.process_table.columns[col_key].label = self.gen_col_label(name) # type: ignore
+            self.process_table.columns[col_key].label = self.gen_col_label(name)  # type: ignore
 
         self.apply_sort()
 
@@ -235,8 +255,9 @@ class PerformancePane(Pane):
         rows: dict[str, tuple] = {}  # { pid → (Gen, Name, PID, CPU, RAM, Thread) }
 
         # 데이터 문자열
-        def _make_row(_proc: psutil.Process, _gen: str, _display_name: str | None = None)\
-        -> tuple[str, str, str, str, str, str] | None:
+        def _make_row(
+            _proc: psutil.Process, _gen: str, _display_name: str | None = None
+        ) -> tuple[str, str, str, str, str, str] | None:
 
             try:
                 with _proc.oneshot():
@@ -253,7 +274,7 @@ class PerformancePane(Pane):
             except psutil.Error:
                 return None
 
-            return _gen, p_id, cpu, ram_str, thr, name # 순서 주의
+            return _gen, p_id, cpu, ram_str, thr, name  # 순서 주의
 
         # 현재 프로세스
         row = _make_row(self.current_process, "[0]Self", _display_name="NexusApp")
@@ -263,7 +284,7 @@ class PerformancePane(Pane):
 
         # 부모 프로세스
         for idx, proc in enumerate(self.parent_proc_cache):
-            row = _make_row(proc, f"[{idx+1}]Parent")
+            row = _make_row(proc, f"[{idx + 1}]Parent")
             if row:
                 rows[str(proc.pid)] = row
 
@@ -296,7 +317,7 @@ class PerformancePane(Pane):
                 # 새로 생성된 프로세스 -> 새 행(Row) 추가
                 self.process_table.add_row(*cells, key=pid_key)
 
-        #self.mini_gen_overview() #TODO
+        # self.mini_gen_overview() #TODO
         self.apply_sort()
 
     def apply_sort(self) -> None:
@@ -323,17 +344,12 @@ class PerformancePane(Pane):
                 return float(val_str[:-2])
 
             elif self.sort_col == "Gen":
-                return int(val_str[1:val_str.index("]")])
+                return int(val_str[1 : val_str.index("]")])
 
             else:
                 raise ValueError(f"process table 정렬 정규화 실패 - (sort_col: {self.sort_col})")
 
-        self.process_table.sort(
-            self.sort_col,
-            key=custom_sort_key,
-            reverse=self.sort_reverse
-        )
-
+        self.process_table.sort(self.sort_col, key=custom_sort_key, reverse=self.sort_reverse)
 
     # 프로세스 수집 =====================================================================
 
@@ -454,14 +470,10 @@ class PerformancePane(Pane):
         if n < 1024:
             return f"{n}B"
 
-        mib_value = n / (1024 ** 2)
+        mib_value = n / (1024**2)
 
         if mib_value < 1000:
             return f"{mib_value:.2f} MiB"
         else:
-            gib_value = n / (1024 ** 3)
+            gib_value = n / (1024**3)
             return f"{gib_value:.2f} GiB"
-
-
-
-

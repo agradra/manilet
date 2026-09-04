@@ -4,8 +4,8 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Rule
 
-from nexus_app.core.module.base import Pane, NxLog, NxRunButton
-from nexus_app.core.service.log import SystemLogger, Log, LogLevel
+from nexus_app.core.module.base import NxLog, NxRunButton, Pane
+from nexus_app.core.service.log import Log, LogLevel, SystemLogger
 from nexus_app.core.service.time import NtpTimer
 
 
@@ -18,6 +18,7 @@ class SystemLogPane(Pane):
     }
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -26,7 +27,7 @@ class SystemLogPane(Pane):
         self.log_n = 0
         self.sys_logger = SystemLogger()
         self.nx_log = NxLog()
-        self.last_log: str = "" # 마지막 로그 저장용
+        self.last_log: str = ""  # 마지막 로그 저장용
 
         # 로그 알람 처리
         def on_log_alerted(log: Log):
@@ -39,6 +40,7 @@ class SystemLogPane(Pane):
 
             if svt:
                 self.app.notify(log.msg, title=f"{log.level}", severity=svt)
+
         self.sys_logger.set_alert_function(on_log_alerted)
 
         # 로그 일반 처리
@@ -46,6 +48,7 @@ class SystemLogPane(Pane):
             self.last_log = self.nx_log.write_log(log)
             self.log_n += 1
             self.border_subtitle = f"log: {self.log_n}"
+
         self.sys_logger.set_emit_function(on_log_emitted)
 
     def compose(self) -> ComposeResult:
@@ -69,7 +72,11 @@ class SystemLogPane(Pane):
             if not dir_path.exists():
                 raise FileNotFoundError(f"'{self.app.log_save_dir_path}'폴더를 찾을 수 없음.")
         except Exception as e:
-            self.sys_logger.emit(LogLevel.ERROR, f" 로그 파일 저장중 폴더 경로 관련 에러가 발생하였습니다. ({self.app.log_save_dir_path})\n→ {e}", is_alert=True)
+            self.sys_logger.emit(
+                LogLevel.ERROR,
+                f" 로그 파일 저장중 폴더 경로 관련 에러가 발생하였습니다. ({self.app.log_save_dir_path})\n→ {e}",
+                is_alert=True,
+            )
             return
 
         log_content = "\n".join(str(line) for line in self.nx_log.lines)
@@ -82,9 +89,13 @@ class SystemLogPane(Pane):
 
         try:
             file_path.write_text(log_content, encoding="utf-8")
-            self.sys_logger.emit(LogLevel.PASS,f" 로그 파일({file_name})이 저장되었습니다.\n→ {file_path}", is_alert=True)
+            self.sys_logger.emit(
+                LogLevel.PASS, f" 로그 파일({file_name})이 저장되었습니다.\n→ {file_path}", is_alert=True
+            )
         except Exception as e:
-            self.sys_logger.emit(LogLevel.ERROR, f"'{file_name}' 저장중 에러가 발생하였습니다. ({file_path})\n→ {e}", is_alert=True)
+            self.sys_logger.emit(
+                LogLevel.ERROR, f"'{file_name}' 저장중 에러가 발생하였습니다. ({file_path})\n→ {e}", is_alert=True
+            )
 
     def btn_copy(self):
         if hasattr(self.nx_log, "lines") and self.nx_log.lines:
@@ -95,4 +106,3 @@ class SystemLogPane(Pane):
 
     def btn_jump_end(self):
         self.nx_log.scroll_end(animate=False)
-

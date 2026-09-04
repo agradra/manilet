@@ -19,6 +19,7 @@ class TimeZone(Enum):
         SEOUL
         NEW_YORK
     """
+
     UTC = ZoneInfo("UTC")
     SEOUL = ZoneInfo("Asia/Seoul")
     NEW_YORK = ZoneInfo("America/New_York")
@@ -67,10 +68,7 @@ class NtpTimer(metaclass=Singleton):
         """
         return time.time() + self._time_offset
 
-    def now_str(self,
-            str_format: str = '%Y-%m-%d %p %I:%M:%S',
-            tz: TimeZone = TimeZone.SEOUL
-    ) -> str:
+    def now_str(self, str_format: str = "%Y-%m-%d %p %I:%M:%S", tz: TimeZone = TimeZone.SEOUL) -> str:
         """NTP 오프셋이 보정된 현재 시각을 지정된 포맷과 타임존의 문자열로 반환합니다.
 
         Args:
@@ -85,11 +83,7 @@ class NtpTimer(metaclass=Singleton):
         return self.float_to_str(self.now(), str_format=str_format, tz=tz)
 
     @staticmethod
-    def float_to_str(
-            time_value: float,
-            str_format: str = '%Y-%m-%d %p %I:%M:%S',
-            tz: TimeZone = TimeZone.SEOUL
-    ) -> str:
+    def float_to_str(time_value: float, str_format: str = "%Y-%m-%d %p %I:%M:%S", tz: TimeZone = TimeZone.SEOUL) -> str:
         """유닉스 타임스탬프(float)를 지정된 포맷과 타임존의 문자열로 변환합니다.
 
         Args:
@@ -104,11 +98,8 @@ class NtpTimer(metaclass=Singleton):
         """
         return datetime.datetime.fromtimestamp(time_value, tz=tz.value).strftime(str_format)
 
-
     @staticmethod
-    def get_utc_offset_hours(
-            time_value: float, tz: TimeZone = TimeZone.NEW_YORK
-    ) -> int:
+    def get_utc_offset_hours(time_value: float, tz: TimeZone = TimeZone.NEW_YORK) -> int:
         """유닉스 타임스탬프(float)와 타임존을 기반으로 UTC 오프셋(시간 단위 정수)을 반환합니다.
 
         Args:
@@ -123,12 +114,11 @@ class NtpTimer(metaclass=Singleton):
         offset = dt.utcoffset()
         return int(offset.total_seconds() // 3600) if offset is not None else 0
 
-
     def _ntp_time_sync(self):
         # ntp요청, 동기화
         while True:
             try:
-                response = ntplib.NTPClient().request('time.google.com', version=3, timeout=5.0)
+                response = ntplib.NTPClient().request("time.google.com", version=3, timeout=5.0)
                 with self._lock:
                     self._time_offset = response.offset
                     self._is_problem = False
