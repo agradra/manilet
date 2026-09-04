@@ -11,7 +11,7 @@
 ```bash
 pip install "manilet-nexuspy @ git+https://github.com/agradra/manilet.git#subdirectory=nexuspy"
 ```
-> [빠른 시작](../README.md#빠른-시작)를 이미 진행하였다면 넘어갑니다.
+> [빠른 시작](../README.md#빠른-시작)을 이미 진행하였다면 넘어갑니다.
 
 ## 간단한 사용 예시
 
