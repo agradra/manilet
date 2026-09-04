@@ -33,8 +33,10 @@ packages = ["nexus_app"]
 
 [tool.hatch.version]
 source = "vcs"
-root = ".."
 fallback-version = "0.0.0.dev0"
+
+[tool.hatch.version.raw-options]
+root = ".."
 
 [project.scripts]
 nexus = "nexus_app.cli:main"

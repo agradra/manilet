@@ -21,5 +21,7 @@ packages = ["nexuspy"]
 
 [tool.hatch.version]
 source = "vcs"
-root = ".."
 fallback-version = "0.0.0.dev0"
+
+[tool.hatch.version.raw-options]
+root = ".."
