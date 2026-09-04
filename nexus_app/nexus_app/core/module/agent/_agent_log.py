@@ -2,30 +2,24 @@ from pathlib import Path
 
 from textual import work
 from textual.app import ComposeResult
-from textual.containers import Horizontal, Container
-from textual.widgets import Rule, ContentSwitcher, LoadingIndicator
+from textual.containers import Container, Horizontal
+from textual.widgets import ContentSwitcher, LoadingIndicator, Rule
 
 from nexus_app.core.module.base import NxLog, NxRunButton
-from nexus_app.core.service.agent import AgentManager, Agent
-from nexus_app.core.service.log import SystemLogger, LogLevel
+from nexus_app.core.service.agent import Agent, AgentManager
+from nexus_app.core.service.log import LogLevel, SystemLogger
 from nexus_app.core.service.time import NtpTimer
+
 from ._base import AgPane
-from ...service.discord import Discord
 
 _NTP_TIMER = NtpTimer()
-_DISCORD = Discord()
 
 def _make_safe_id(name: str) -> str:
     """Textual ID로 사용할 수 있도록 에이전트 이름을 안전하게 변환"""
     return f"agent_log_{name.encode('utf-8').hex()}"
 
 class _AgentLogContainer(Container):
-    DEFAULT_CSS = """
-    _AgentLogContainer {
-        
 
-    }
-    """
     def __init__(self, agent, **kwargs):
         super().__init__(id= _make_safe_id(agent.name),**kwargs)
         self.agent: Agent = agent
@@ -63,6 +57,7 @@ class AgentLogPane(AgPane):
         # widget var
         self.log_switcher = ContentSwitcher(initial=None)
 
+        self.old_agents_dir_path: str = self.agent_mng.agents_dir_path
         self.agent_log_ctn_dict: dict[str, _AgentLogContainer] = {} # 에이전트 이름 : _AgentLogContainer
         self.now_agent_name: str | None = None
 
@@ -77,7 +72,7 @@ class AgentLogPane(AgPane):
             ContentSwitcher {
                 height: 1fr;
             }
-            
+
             & > Horizontal {
                 height: 1;
             }
@@ -178,7 +173,28 @@ class AgentLogPane(AgPane):
 
     def _ensure_all_widgets(self) -> None:
         """새 에이전트 확인하고 스레드 위젯 장착"""
-        for agent in self.agent_mng.get_agent_list():
+
+        if self.log_switcher.current == "loading":
+            self.watch_now_agent_name(self.now_agent_name)
+
+        all_agents = self.agent_mng.get_agent_list()
+        active_names = {agent.name for agent in all_agents}
+
+        for name in list(self.agent_log_ctn_dict.keys()):
+            if name not in active_names:
+                old_ctn = self.agent_log_ctn_dict.pop(name)
+                old_ctn.remove()
+
+        for ctn in self.log_switcher.query(_AgentLogContainer):
+            if ctn.agent.name not in active_names:
+                ctn.remove()
+
+        if self.now_agent_name and self.now_agent_name not in active_names:
+            self.now_agent_name = None
+            self.log_switcher.current = "empty_log_box"
+            self.border_title = "Agent log"
+
+        for agent in all_agents:
             if agent.name not in self.agent_log_ctn_dict:
                 new_log_ctn = _AgentLogContainer(agent=agent)
                 self.agent_log_ctn_dict[agent.name] = new_log_ctn

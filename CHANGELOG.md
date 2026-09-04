@@ -1,51 +1,38 @@
 # Changelog
 
-이 파일은 manilet 프로젝트의 모든 주요 변경 사항을 기록합니다.
-이 포맷은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) 표준을 따르며, 유의적 버전(Semantic Versioning)을 준수합니다.
+이 파일은 manilet 프로젝트의 모든 주요 변경 사항을 기록함.
+이 포맷은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) 표준을 따르며, 유의적 버전(Semantic Versioning)을 준수함.
 
 ## [Unreleased]
-- wallet 탭 추가
+- wallet 탭 기능 완성
 - 단축키 기능 여러 추가
-- nexuspy에 그래프 전송 기능 추가 및 app에서 숫자 모니터링 기능 추가
+- nexuspy에 그래프 전송 기능 추가 및 app에서 수신 모니터링 기능 추가
 - nexuspy에 hyperliquid 매매 지원 도구 추가
 - 기타 성능 최적화
+
+---
+
+## [1.0.0] - 2026-09-04
+### Changed
+- **모노레포 패키지 분리**: 전체 프로젝트를 `manilet` 모노레포로 전환하고, 대시보드 앱(`nexus_app`)과 에이전트 전용 라이브러리(`nexuspy`)로 분리하여 관리를 용이하게 개선함.
+- **설치 방식 간소화**: 깃허브 소스코드를 직접 클론할 필요 없이 `pip install` 명령어로 파이썬 가상환경에 즉시 설치하여 바로 앱을 실행할 수 있도록 함.
+- **UI 기반 설정 및 경로 관리**: 기존 텍스트 파일(`env.toml`) 편집 방식을 폐지하고, 앱 내 화면(Home 탭)에서 직접 디스코드 웹훅, 에이전트 경로, 파이썬 가상환경(venv) 경로를 쉽게 변경할 수 있도록 개선함.
+
+### Added
+- **강력한 보안 암호화 (CryptoDB)**: 사용자의 민감한 정보(디스코드 웹훅, 지갑 시크릿 키 등)를 안전하게 보관하기 위해 최초 실행 시 비밀번호를 설정하여 데이터베이스를 암호화하는 기능 도입.
+- **단축키 및 편의 기능 지원**: 포커스 영역 최대화(`Ctrl + G`), 상세 설정창 호출(`Ctrl + P`), 도움말 패널 팝업(`F1`) 등 키보드 편의성 대폭 향상.
+- **지갑(Wallet) 관리 기반 신설**: 향후 에이전트에서 사용할 거래소 API 키 및 지갑 시크릿 키를 앱 안에서 안전하게 관리하기 위한 지갑(Wallet) 탭 신설 (현재 개발 중).
+
+### Removed
+- 복잡한 로컬 개발 세팅 및 `env.toml` 파일 기반 환경 설정 의존성 완전 제거.
+
 ---
 
 ## [0.0.0] - 2026-06-26
 ### Added
-- **대시보드 앱 (`src/`)**: Textual 기반 터미널 UI 애플리케이션 구현
-  - Home 탭: 시스템 로그 뷰어, CPU/RAM 실시간 모니터, 로그 리셋 및 내보내기
-  - Agent 탭: 에이전트 리스트뷰, 실시간 로그 뷰어, 시작/중지/초기화/로그 저장 버튼
-  - 상단바: 앱 이름, 버전, 탭 네비게이션, 실시간 시계
-  - Textual CSS 기반 스타일링 (`style.tcss`)
-- **에이전트 관리 시스템 (`_agent_model.py`)**
-  - `NEXUS_AGENT/` 폴더의 `.py` 파일 자동 탐지 및 동기화 (`reset_agent_dict`)
-  - 에이전트를 서브프로세스로 실행 (`subprocess.Popen`) 및 생명주기 관리
-  - stdout 파이프를 통한 JSON 기반 로그 스트림 수집 (`_agent_lifecycle`)
-  - 에이전트 상태 관리: SLEEPING → RUNNING → STOPPING → STOPPED
-  - 에이전트 로그를 텍스트 파일로 저장 (`generate_log_file`)
-  - 종료 시 전체 에이전트 프로세스 강제 종료 (`atexit`)
-- **에이전트 러너 (`_agent_runner.py`)**: `importlib`로 에이전트 `.py` 파일을 동적 로드 후 `main()` 실행
-- **디스코드 연동 (`discord.py`)**
-  - 에이전트 상태 모니터링 메시지 (단일 메시지 PATCH 방식으로 실시간 갱신)
-  - 에이전트 로그 자동 전송 (운영/테스트 채널 분리)
-  - 연결 끊김 감지 및 자동 재시도
-  - 앱 종료 시 상태 메시지 자동 삭제
-- **공용 모듈 (`src/common/`)**
-  - `Const`: 앱 이름, 버전
-  - `Util`: 한국 시간 포맷팅 (`Asia/Seoul`), ANSI 컬러 출력
-  - `LogLevel` (FATAL~PRINT), `LogStream` (JSON 직렬화/역직렬화), `Log` 데이터클래스
-  - `AgentStatus`, `Agent` 데이터클래스
-  - `Config`: `env.toml` 파싱 (디스코드 웹훅, 지갑 설정)
-- **진입점 (`main.py`)**
-  - ASCII 아트 배너 출력
-  - Windows Mutex 기반 단일 인스턴스 보장 및 기존 창 포커스 복원
-  - 콘솔 X 버튼 안전 종료 핸들러 (`SetConsoleCtrlHandler`)
-  - `--from-bat` 인자 검증 (bat 파일 이외 실행 차단)
-- **nexuspy 라이브러리**
-  - `nexuspy.log`: 에이전트용 로그 API (`error`, `warn`, `info`, `debug`)
-  - `nexuspy.trade_bot`: HyperLiquid DEX 매매 래퍼 (`HyperLiquid` 클래스, `WsMaster` 웹소켓 관리) — 일부 미완성
-  - `nexuspy.trade_bot_beta`: 베타 버전 매매 래퍼 — 일부 미완성
-- **실행 스크립트**: `start.bat` (일반 실행), `dev.bat` (Textual 개발 모드)
-
----
+- **터미널 대시보드 앱 기반 구현**: 터미널 환경(TUI)에서 여러 개의 트레이딩 에이전트를 한눈에 모니터링하고 제어할 수 있는 대시보드 구현.
+- **Home 탭 (시스템 상태 모니터링)**: 앱의 시스템 로그 실시간 확인 및 대시보드가 사용 중인 CPU, 메모리(RAM) 자원 상태 모니터링 기능 추가.
+- **Agent 탭 (에이전트 통합 제어)**: 등록된 에이전트 목록의 실시간 확인, 개별 에이전트 시작/중지 제어, 색상이 입혀진 실시간 로그 뷰어 기능 제공.
+- **디스코드 웹훅 알림 연동**: 에이전트 실행/중지 및 오류 로그 발생 시 디스코드 채널로 실시간 상태 메시지 및 로그 전송 연동 기능 탑재.
+- **안전한 프로세스 관리 로직**: 앱이나 에이전트의 예기치 않은 종료 시, 실행 중이던 하위 에이전트들을 안전하게 강제 종료시키는 보호 시스템 포함.
+- **Nexuspy (에이전트용 라이브러리)**: 봇 스크립트 작성 시 `nexuspy.log` 라이브러리로 로그를 기록하면 대시보드 UI 및 디스코드로 자동 포맷팅 및 전송되는 기능 제공.
