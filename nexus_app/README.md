@@ -2,12 +2,12 @@
 
 **Hyperliquid DEX 자동매매 에이전트 관리 대시보드**
 
-Windows 터미널(TUI) 환경에서 여러 트레이딩 에이전트를 실행·모니터링·관리할 수 있는 대시보드 앱입니다.
+터미널(TUI) 환경에서 여러 트레이딩 에이전트를 실행·모니터링·관리할 수 있는 대시보드 앱입니다.
 
 ## 설치
 
 ```bash
-pip install git+https://github.com/manilet/manilet-nexus.git#subdirectory=nexus_app
+pip install git+https://github.com/agradra/manilet-nexus.git#subdirectory=nexus_app
 ```
 
 ## 실행

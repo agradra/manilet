@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "nexus"
+name = "manilet"
 dynamic = ["version"]
 description = "nexus_app: 넥서스 에이전트 관리 앱\nnexuspy: 에이전트 설계용 SDK"
 readme = "README.md"
@@ -20,6 +20,13 @@ required-version = ">=0.6.0"
 
 [tool.uv.workspace]
 members = ["nexuspy", "nexus_app"]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "deptry",
+    "pytest",
+]
 
 [tool.hatch.version]
 source = "vcs"

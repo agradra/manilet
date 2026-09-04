@@ -45,7 +45,7 @@ jobs:
         run: uv sync
 
       - name: Build nexuspy
-        run: uv build --package nexuspy
+        run: uv build --package manilet-nexuspy
 
       - name: Build nexus_app
-        run: uv build --package nexus-app
+        run: uv build --package manilet-nexus-app
