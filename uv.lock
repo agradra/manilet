@@ -10,7 +10,7 @@ resolution-markers = [
 members = [
     "nexus",
     "nexus-app",
-    "nexus-sdk",
+    "nexuspy",
 ]
 
 [[package]]
@@ -695,12 +695,10 @@ wheels = [
 
 [[package]]
 name = "nexus"
-version = "1.0.0"
 source = { virtual = "." }
 
 [[package]]
 name = "nexus-app"
-version = "1.0.0"
 source = { editable = "nexus_app" }
 dependencies = [
     { name = "cryptography" },
@@ -734,8 +732,7 @@ requires-dist = [
 ]
 
 [[package]]
-name = "nexus-sdk"
-version = "1.0.0"
+name = "nexuspy"
 source = { editable = "nexuspy" }
 
 [[package]]
