@@ -174,7 +174,7 @@ class AgentLogPane(AgPane):
         if now_log_ctn is None:
             self.border_subtitle = None
         else:
-            self.border_subtitle = str(now_log_ctn.log_n)
+            self.border_subtitle = f"dict n: {len(self.agent_log_ctn_dict)} / switcher n: {len(self.log_switcher.query(_AgentLogContainer))}/ log n: {now_log_ctn.log_n}"
 
     def _ensure_all_widgets(self) -> None:
         """새 에이전트 확인하고 스레드 위젯 장착"""
