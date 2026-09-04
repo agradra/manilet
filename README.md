@@ -28,16 +28,16 @@ manilet의 모든 프로젝트(main 브랜치)를 가상환경에 설치합니�
 
 #### Windows
 ```bash
-python -m venv venv
-venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
 ```
 
 #### Mac/Linux
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
-> Mac/Linux 환경에서 `python3` 대신 `python`으로 알리아스가 설정되어 있다면 `python -m venv venv`를 사용해도 무방합니다.
+> Mac/Linux 환경에서 `python3` 대신 `python`으로 알리아스가 설정되어 있다면 `python3 -m venv .venv`를 사용해도 무방합니다.
 
 ### 2. 패키지 설치
 가상환경에 진입된 터미널에서 아래 명령어를 전부 복사하여 실행합니다.

@@ -18,6 +18,12 @@ pip install "manilet-nexus-app @ git+https://github.com/agradra/manilet.git#subd
 nexus
 ```
 
+> 만약 linux 혹은 ssh 환경에서 색상이 이상한 경우 아래 명령어를 실행한 후 시작 명령어를 실행합니다
+> ```
+>export COLORTERM=truecolor
+>export TERM=xterm-256color
+> ```
+
 ---
 
 ## 프로그램 사용
