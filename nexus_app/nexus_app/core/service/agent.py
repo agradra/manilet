@@ -8,6 +8,7 @@ import time
 from enum import IntEnum
 from pathlib import Path
 from queue import Queue
+from typing import Literal
 
 from ._singleton import Singleton
 from ._stream import parse
@@ -518,6 +519,8 @@ class AgentManager(metaclass=Singleton):
 
     """
 
+    _discord = Discord()
+
     def __init__(self):
         self._lock = threading.Lock()
         self._logger = SystemLogger()
@@ -540,6 +543,7 @@ class AgentManager(metaclass=Singleton):
         self._reload_agents()
         self._is_die: bool = False
 
+        self._discord.set_status_md(self._build_get_discord_status_md)
         threading.Thread(target=self._loop_check_all_file, daemon=True).start()
         atexit.register(self.kill)
 
@@ -565,8 +569,8 @@ class AgentManager(metaclass=Singleton):
             return
 
         for agent in self._agent_dict.values():
-            if agent.status in (AgentStatus.RUNNING, AgentStatus.STOPPING):
-                self._logger.emit(LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다. 아직 작동 중인 에이전트({agent.name})가 남아있습니다.")
+            if agent.status is not AgentStatus.SLEEPING:
+                self._logger.emit(LogLevel.FAIL, f"에이전트용 폴더 경로를 변경할 수 없습니다. 아직 초기화 되지 않은 에이전트({agent.name})가 남아있습니다.")
                 return
         try:
 
@@ -822,4 +826,20 @@ class AgentManager(metaclass=Singleton):
             self.put_sys_log(f"'{agent_name}' 로그 파일 생성 중 오류 발생: {e}")
             return False
     """
+
+    _STATUS_ICON: dict[AgentStatus, str] = {
+        AgentStatus.RUNNING: "▶️",
+        AgentStatus.STOPPING: "▶️",
+        AgentStatus.STOPPED: "⏹️"
+    }
+
+    def _build_get_discord_status_md(self) -> str:
+        try:
+            payload = ""
+            for agent in self._agent_dict.values():
+                if agent.status != AgentStatus.SLEEPING:
+                    payload += f"{self._STATUS_ICON[agent.status]} {agent.name}\n"
+            return payload
+        except Exception:
+            return "Error"
 

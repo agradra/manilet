@@ -31,6 +31,8 @@ from .time import NtpTimer
 
 __all__ = ["DMode", "DChannel","Discord"]
 
+_NTP_TIMER = NtpTimer()
+
 _COLOR = 0x27272f
 _LOG_ICON: dict[LogLevel, str] = {
     LogLevel.PRINT: ":interrobang:",
@@ -69,7 +71,7 @@ def _build_discord_payload(data: dict[str, list[Log]]) -> dict:
             if len(safe_msg) > 1000: safe_msg = safe_msg[:995] + "..." # value 1024 초과시 서버 안받음
 
             field = {
-                "name": f"{icon}  {level_name} `[{log.time}]`",
+                "name": f"{icon}  {level_name} `[{_NTP_TIMER.float_to_str(log.time)}]`",
                 "value": safe_msg,
                 "inline": False
             }
@@ -79,13 +81,6 @@ def _build_discord_payload(data: dict[str, list[Log]]) -> dict:
 
     return {"content": content, "embeds": embeds}
 
-"""
-_STATUS_ICON: dict[AgentStatus, str] = {
-    AgentStatus.SLEEPING: "☐",
-    AgentStatus.RUNNING: "☑︎",
-    AgentStatus.STOPPING: "☑︎",
-    AgentStatus.STOPPED: "☒"
-}"""
 
 # ==================================================================================================================
 # public class
@@ -134,7 +129,6 @@ class Discord(metaclass=Singleton):
         # private var
 
         self._sys_logger = SystemLogger()
-        self._ntp_timer = NtpTimer()
         self._lock = threading.Lock()
 
         self._db = CryptoDB("Discord")
@@ -384,7 +378,7 @@ class Discord(metaclass=Singleton):
             "embeds": [
                 {
                     "color": color,
-                    "title": f"🕓  {self._ntp_timer.now_str()}",
+                    "title": f"🕓  {_NTP_TIMER.now_str()}",
                     "description": f"{self._status_md_fn()}".replace("_", "\\_")
                 }
             ]
@@ -418,7 +412,7 @@ class Discord(metaclass=Singleton):
                 raise ConnectionError(f"디스코드 서버 상태 모니터링 수정 중 문제 발생 ({res.status_code}-{res.text})")
 
 
-    def _www_remove_status(self, status_url: str = None) -> None:
+    def _www_remove_status(self, status_url: str | None = None) -> None:
         if self._status_msg_id:
             if status_url is None:
                 status_url = self._status_url
