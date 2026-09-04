@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nexuspy"
+dynamic = ["version"]
+description = "에이전트 설계용 SDK"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+    { name = "agradra" }
+]
+
+dependencies = []
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["nexuspy"]
+
+[tool.hatch.version]
+source = "vcs"
+root = ".."
+fallback-version = "0.0.0.dev0"

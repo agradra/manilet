@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nexus-app"
+dynamic = ["version"]
+description = "넥서스 에이전트 관리 앱"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+    { name = "agradra" }
+]
+
+dependencies = [
+    "textual~=8.2.5",
+    "psutil~=7.2.2",
+    "rich~=15.0.0",
+    "requests~=2.33.1",
+    "tzdata",
+    "cryptography",
+    "tinydb",
+    "python-dotenv",
+    "pynvml",
+    "ntplib",
+    "eth-account>=0.14.0",
+    "platformdirs>=4.11.3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["nexus_app"]
+
+[tool.hatch.version]
+source = "vcs"
+root = ".."
+fallback-version = "0.0.0.dev0"
+
+[project.scripts]
+nexus = "nexus_app.cli:main"

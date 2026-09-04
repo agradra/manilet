@@ -1,0 +1,113 @@
+Screen {
+    overflow-y: hidden;
+}
+
+ToastRack {
+    dock: top;
+    dock: right;
+    margin: -1 -1 0 0;
+
+}
+Toast{
+    max-width: 100;
+}
+
+* {
+  scrollbar-color: $accent 30%;
+  scrollbar-color-hover: $accent 80%;
+  scrollbar-color-active: $accent;
+  scrollbar-background: $background;
+  scrollbar-background-hover: $background;
+  scrollbar-background-active: $background;
+  scrollbar-size-vertical: 1;
+
+  scrollbar-corner-color: $background;
+
+  &:focus {
+    scrollbar-color: $accent 55%;
+  }
+}
+
+Button {
+    width: auto;
+    min-width: 0;
+    height: 1;
+    min-height: 0;
+    padding: 0;
+    margin-right: 1;
+    border: none;
+    background: $surface;
+    color: $accent 90%;
+    text-align: center;
+
+
+    &.-error {
+        color: $error;
+    }
+
+    &.-primary {
+        color: $primary;
+    }
+
+    &.-warning {
+        color: $warning;
+    }
+
+    &.-success {
+        color: $success;
+    }
+
+    &:focus {
+        text-style: bold;
+        background: $panel;
+    }
+
+    &:hover {
+        background: $panel-darken-2;
+        color: $text;
+    }
+
+    /* NxRunButton */
+    &.press {
+        color: $text;
+        text-style: bold reverse;
+        background: $surface;
+    }
+}
+
+Rule {
+  margin: 0;
+  color: $primary-background;
+}
+
+Input {
+  padding: 0 1;
+  height: 1;
+  background: $surface;
+  border: none;
+  color: $foreground-darken-1;
+
+  &:focus {
+    color: $foreground;
+    background: $surface-lighten-1;
+    padding-left: 0;
+    border-left: outer $surface-lighten-2;
+
+    & .input--cursor {
+      color: $text;
+      background: $accent;
+      text-style: not reverse;
+    }
+
+  }
+}
+
+.-maximized {
+    margin: 1 2;
+}
+Switch {
+          padding: 0;
+          border: none;
+          background: $primary;
+
+        }
