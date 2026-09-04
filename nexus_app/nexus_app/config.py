@@ -5,7 +5,7 @@ from platformdirs import user_data_dir, user_downloads_dir
 
 TITLE: str = "NEXUS" # 사용자 ui용
 APP_NAME: str = "nexus_app" # 시스템 사용용
-PACKAGE_NAME: str = "nexus-app" # 패키지 이름 (배포용)
+PACKAGE_NAME: str = "manilet-nexus-app" # 패키지 이름 (배포용)
 
 try:
     VERSION: str = version(PACKAGE_NAME)
