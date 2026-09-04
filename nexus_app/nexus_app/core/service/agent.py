@@ -409,10 +409,10 @@ class Agent:
                             f"'{self._name}'에이전트의 비정상 종료가 감지되었습니다. (exit code: {exit_code})"
                         )
 
-                    self._logs.put_nowait(Log(LogLevel.DEBUG, f"{self._name} 에이전트 정지 ({exit_code})"))
+                    self._logs.put_nowait(Log(LogLevel.DEBUG, f"'{self._name}' 에이전트 정지 ({exit_code})"))
 
                 except Exception as e:
-                    self._logs.put_nowait(Log(LogLevel.ERROR, f"{self._name} 에이전트 관리 쓰레드 내부 에러 발생 - {e}"))
+                    self._logs.put_nowait(Log(LogLevel.ERROR, f"'{self._name}' 에이전트 관리 쓰레드 내부 에러 발생 - {e}"))
 
                 finally:
                     with self._lock:
@@ -423,7 +423,7 @@ class Agent:
 
             threading.Thread(target=life_cycle, daemon=True).start()
 
-            self._logs.put_nowait(Log(LogLevel.DEBUG, f"{self._name} 에이전트 작동 시작"))
+            self._logs.put_nowait(Log(LogLevel.DEBUG, f"'{self._name}' 에이전트 작동 시작"))
 
         except Exception as e:
             self._logger.emit(LogLevel.ERROR, f"'{self._name}'에이전트 실행 실패: 프로세스 생성 및 실행 중 에러 발생 - {e}")

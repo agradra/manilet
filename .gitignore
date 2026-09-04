@@ -36,3 +36,8 @@ Desktop.ini
 # Env / Secrets
 # ========================
 .env
+
+# ========================
+# Private Workspace
+# ========================
+_private/

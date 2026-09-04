@@ -1,16 +1,14 @@
 # Changelog
 
-이 파일은 Nexus 프로젝트의 모든 주요 변경 사항을 기록합니다.
+이 파일은 manilet 프로젝트의 모든 주요 변경 사항을 기록합니다.
 이 포맷은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) 표준을 따르며, 유의적 버전(Semantic Versioning)을 준수합니다.
 
-## [Unreleased] - (다음 버전에 추가될 예정인 기능들)
-- 로그창을 RichLog에서 Log로 변환 및 하이라이트 생성으로 최적화
-- 기타 미완성 디자인(tcss) 완성
+## [Unreleased]
 - wallet 탭 추가
-- V 디스코드 클래스 업그레이드
-- home 탭에서 전반적으로 에이전트 보기 가능
 - 단축키 기능 여러 추가
-- nexuspy.hyperliquid 완벽 제공
+- nexuspy에 그래프 전송 기능 추가 및 app에서 숫자 모니터링 기능 추가
+- nexuspy에 hyperliquid 매매 지원 도구 추가
+- 기타 성능 최적화
 ---
 
 ## [0.1.0] - 2026-06-26
