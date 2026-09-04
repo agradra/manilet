@@ -56,8 +56,5 @@ pip install "manilet-nexuspy @ git+https://github.com/agradra/manilet.git#subdir
 
 ## 개발자 가이드
 
-### Nexus App
-- [아키텍처](./nexus_app/docs/architecture.md)
-
 ### Nexuspy
 - [통신 프로토콜 (Nexus App ⇄ Nexuspy)](./nexuspy/docs/AGENT_PROTOCOL.md)
