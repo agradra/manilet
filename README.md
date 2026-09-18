@@ -12,7 +12,7 @@
 에이전트 전용 SDK
 
 
-### 3. [VTM](https://www.youtube.com/watch?v=3baR3FK2Poc)
+### 3. [Praeforum](./praeforum/README.md)
 백테스팅, 에이전트 연구 및 제작용 프레임워크
 > 현재 개발중...
 
@@ -20,8 +20,6 @@
 
 ## 빠른 시작
 manilet의 모든 프로젝트(main 브랜치)를 가상환경에 설치합니다.
-
-> 현재 VTM은 개발중이므로 설치가 불가능합니다. 아래 패키지 설치 방법은 VTM을 제외한 패키지 설치 방법입니다.
 
 ### 1. 가상환경 생성 및 진입
 프로젝트가 생성되길 원하는 폴더에서 터미널을 열고 운영체제에 따라 아래 명령어를 선택하여 실행합니다.
@@ -47,6 +45,9 @@ pip install "manilet-nexus-app @ git+https://github.com/agradra/manilet.git#subd
 
 # nexuspy 설치
 pip install "manilet-nexuspy @ git+https://github.com/agradra/manilet.git#subdirectory=nexuspy"
+
+# praeforum 설치
+pip install "manilet-praeforum @ git+https://github.com/agradra/manilet.git#subdirectory=praeforum"
 ```
 
 ### 3. 사용

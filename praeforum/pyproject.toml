@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "manilet-praeforum"
+dynamic = ["version"]
+description = "백테스팅 프로그램"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+    { name = "agradra" }
+]
+
+dependencies = [
+    "polars>=1.44.2",
+]
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["praeforum"]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0.dev0"
+
+[tool.hatch.version.raw-options]
+root = ".."

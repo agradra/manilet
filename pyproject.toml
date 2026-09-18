@@ -9,7 +9,10 @@ description = "nexus_app: 넥서스 에이전트 관리 앱\nnexuspy: 에이전�
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "polars>=1.44.2",
+    "typer>=0.27.2",
+]
 authors = [
     { name = "agradra" }
 ]
@@ -19,7 +22,7 @@ package = false
 required-version = ">=0.6.0"
 
 [tool.uv.workspace]
-members = ["nexuspy", "nexus_app"]
+members = ["nexuspy", "nexus_app","praeforum"]
 
 [dependency-groups]
 dev = [
