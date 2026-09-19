@@ -13,7 +13,7 @@ except PackageNotFoundError:
     VERSION: str = "D.E.V"
 
 # 절대 불변
-DATA_DIR: Path = Path(user_data_dir(APP_NAME, appauthor=False))
+DATA_DIR: Path = Path(user_data_dir("manilet" / APP_NAME, appauthor=False))
 DB_PATH: Path = DATA_DIR / f"{APP_NAME}_db.json"
 
 # 초기값

@@ -36,6 +36,7 @@ root = ".."
 praeforum = "praeforum.cli:main"
 
 
+[tool.hatch.build]
 # Rust 빌드
 hooks.custom.enable = true
 artifacts = [

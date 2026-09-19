@@ -4,9 +4,9 @@ from pathlib import Path
 
 from platformdirs import user_data_dir, user_downloads_dir
 
-TITLE: str = "Praeforum"  # 사용자 ui용
-PROG_NAME: str = "praeforum"  # 시스템 사용
-PACKAGE_NAME: str = "manilet-praeforum"  # 패키지 이름 (배포용)
+TITLE: str = "Aetaforum"  # 사용자 ui용
+PROG_NAME: str = "aetaforum"  # 시스템 사용
+PACKAGE_NAME: str = "manilet-aetaforum"  # 패키지 이름 (배포용)
 
 try:
     VERSION: str = version(PACKAGE_NAME)
