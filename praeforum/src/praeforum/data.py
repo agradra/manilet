@@ -22,3 +22,5 @@ def check_symbol_exists(symbol: str) -> bool:
         return symbol in valid_symbols
     except Exception as e:
         return True
+
+

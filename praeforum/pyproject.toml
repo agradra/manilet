@@ -15,15 +15,31 @@ authors = [
 
 dependencies = [
     "polars>=1.44.2",
+    "hatchling>=1.32.3",
+    "typer>=0.27.2",
+    "packaging>=26.3",
 ]
 
-
 [tool.hatch.build.targets.wheel]
-packages = ["praeforum"]
-
+packages = [
+    "src/praeforum",
+    "src/praeforum_app"
+]
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "0.0.0.dev0"
 
 [tool.hatch.version.raw-options]
 root = ".."
+
+[project.scripts]
+praeforum = "praeforum.cli:main"
+
+
+# Rust 빌드
+hooks.custom.enable = true
+artifacts = [
+    "praeforum/engine.pyd",
+    "praeforum/engine.so", 
+    "praeforum/gui/web_dist/**/*"
+]
