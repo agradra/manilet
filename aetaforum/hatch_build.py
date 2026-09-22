@@ -9,9 +9,9 @@ class RustBuildHook(BuildHookInterface):
 
         print("Starting Tauri (Rust) compilation...")
         
-        frontend_dir = os.path.join(os.path.dirname(__file__), "frontend")
+        frontend_dir = os.path.join(os.path.dirname(__file__), "gui")
         
-        # 1. Tauri 빌드 (프론트엔드 + Rust 백엔드)
+        # Tauri 빌드 (프론트엔드 + Rust 백엔드)
         try:
             # 윈도우 환경에서는 npm.cmd, 맥/리눅스에서는 npm 사용
             npm_cmd = "npm.cmd" if sys.platform.startswith("win") else "npm"
@@ -20,7 +20,7 @@ class RustBuildHook(BuildHookInterface):
             print("Tauri build failed: Please ensure npm and Rust (Tauri) are installed.")
             raise
             
-        # 2. 생성된 실행파일을 aetaforum/bin 경로로 복사
+        # 생성된 실행파일을 aetaforum/bin 경로로 복사
         # 윈도우는 app.exe, 맥/리눅스는 app
         exe_name = "app.exe" if sys.platform.startswith("win") else "app"
         

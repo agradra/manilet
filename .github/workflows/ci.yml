@@ -57,7 +57,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install npm dependencies
-        working-directory: ./aetaforum/frontend
+        working-directory: ./aetaforum/gui
         run: npm install
 
       - name: Install Python build tools
