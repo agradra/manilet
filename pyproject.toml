@@ -19,7 +19,7 @@ package = false
 required-version = ">=0.6.0"
 
 [tool.uv.workspace]
-members = ["nexuspy", "nexus_app","praeforum"]
+members = ["nexuspy", "nexus_app","aetaforum"]
 
 [dependency-groups]
 dev = [

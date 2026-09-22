@@ -9,9 +9,9 @@ resolution-markers = [
 [manifest]
 members = [
     "manilet",
+    "manilet-aetaforum",
     "manilet-nexus-app",
     "manilet-nexuspy",
-    "manilet-praeforum",
 ]
 
 [[package]]
@@ -410,6 +410,24 @@ dev = [
 ]
 
 [[package]]
+name = "manilet-aetaforum"
+source = { editable = "aetaforum" }
+dependencies = [
+    { name = "hatchling" },
+    { name = "packaging" },
+    { name = "polars" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "hatchling", specifier = ">=1.32.3" },
+    { name = "packaging", specifier = ">=26.3" },
+    { name = "polars", specifier = ">=1.44.2" },
+    { name = "typer", specifier = ">=0.27.2" },
+]
+
+[[package]]
 name = "manilet-nexus-app"
 source = { editable = "nexus_app" }
 dependencies = [
@@ -442,24 +460,6 @@ requires-dist = [
 [[package]]
 name = "manilet-nexuspy"
 source = { editable = "nexuspy" }
-
-[[package]]
-name = "manilet-praeforum"
-source = { editable = "praeforum" }
-dependencies = [
-    { name = "hatchling" },
-    { name = "packaging" },
-    { name = "polars" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "hatchling", specifier = ">=1.32.3" },
-    { name = "packaging", specifier = ">=26.3" },
-    { name = "polars", specifier = ">=1.44.2" },
-    { name = "typer", specifier = ">=0.27.2" },
-]
 
 [[package]]
 name = "markdown-it-py"
