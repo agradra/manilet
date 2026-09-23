@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "aetaforum",
   "version": "0.1.0",
-  "identifier": "com.aetaforum.app",
+  "identifier": "com.aetaforum.desktop",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -15,6 +15,8 @@
         "title": "Aetaforum",
         "width": 800,
         "height": 600,
+        "minWidth": 400,
+        "minHeight": 300,
         "resizable": true,
         "fullscreen": false,
         "transparent": true,

@@ -1,19 +1,11 @@
-:root {
-  --text: #9ca3af;
-  --text-h: #f3f4f6;
-  --bg: transparent;
-  --border: #2e303a;
-  --code-bg: #1f2028;
-  --accent: #c084fc;
-  --accent-bg: rgba(192, 132, 252, 0.15);
-  --accent-border: rgba(192, 132, 252, 0.5);
-  --social-bg: rgba(47, 48, 58, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+:root {
+  --sans: 'Inter', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --heading: 'Inter', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
@@ -28,276 +20,61 @@
   @media (max-width: 1024px) {
     font-size: 16px;
   }
+
+  --text: #9ca3af;
+  --text-h: #f3f4f6;
+  --bg: #fdfdfdf0;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+  --social-bg: rgba(47, 48, 58, 0.5);
+  --shadow:rgba(0, 0, 0, 0.4) 0 10px 15px -3px,
+  rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
 }
 
-#social .button-icon {
-  filter: invert(1) brightness(2);
+// toto
+앱의 기본 형태가 잡혔어. 창은 총 4개까지 가능해. 하지만 이중 설정창(설정 버튼 누를 시 나옴)은 항상 독립된 창 형태로 열려서 따로 만들어도 돼. 창은 헤더창,
+사이드창,
+메인창으로 나뉘어. 처음 앱을 실행하면 모든 창 안에 헤더,
+사이드바,
+멩니 섹션이 같이 있어. 참고로 이렇게 큰 창 안에서 헤더는 상하좌우에 드래그로 이동시켜서 붙이거나 사이드바와 메인섹션도 서로 좌우 드래그로 변경 가능해. 헤더창,
+사이드창,
+메인 창 각각 독립 분리,
+서로 1,
+2 구조로 분리 전부 가능해. 이때 헤더창이 혼자만 따로 분리된 경우 헤더창의 크기는 내부적으로 헤더 크기에 맞게 조정돼. 그리고 헤더는 세로모드와 가로 모드로 자유록게 변경 가능해(사이드바와 멩니 섹션과 합쳐져 있느 ㄴ상태일 경우 어디에 드래그되어 위치해있는지에 따라 상하일경우 자동으로 가로, 좌우일경우 자동으로 세로모드임). 창이 분리되어있더라도 각각 창이 전부 연결되어있어야해. 이 구조 가능할까?:root[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f4f4f5;
+  --text-primary: #18181b;
+  --text-muted: #71717a;
+  --accent: #2563eb;
+  --border-color: #e4e4e7;
 }
 
-  /* Tauri 기본 투명도(Layered Window)를 위한 배경색 설정 */
-  html,
-  body,
-  #app {
-    background-color: transparent !important;
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-  }
 
-  body {
-    /* 포커스를 잃어도 유지되는 반투명 검은색 (알파값 0.7) */
-    background-color: rgba(30, 30, 30, 0.7) !important;
-    border-radius: 64px;
-    /* 더 동그랗게 변경 (원하는 수치로 조절 가능) */
-    overflow: hidden;
-    margin: 0;
-  }
+html,
+body {
+  background-color: transparent !important;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
 
-  h1,
-  h2 {
-    font-family: var(--heading);
-    font-weight: 500;
-    color: var(--text-h);
-  }
+input,
+button,
+textarea,
+select {
+  font-family: inherit;
+}
 
-  h1 {
-    font-size: 56px;
-    letter-spacing: -1.68px;
-    margin: 32px 0;
-
-    @media (max-width: 1024px) {
-      font-size: 36px;
-      margin: 20px 0;
-    }
-  }
-
-  h2 {
-    font-size: 24px;
-    line-height: 118%;
-    letter-spacing: -0.24px;
-    margin: 0 0 8px;
-
-    @media (max-width: 1024px) {
-      font-size: 20px;
-    }
-  }
-
-  p {
-    margin: 0;
-  }
-
-  code,
-  .counter {
-    font-family: var(--mono);
-    display: inline-flex;
-    border-radius: 4px;
-    color: var(--text-h);
-  }
-
-  code {
-    font-size: 15px;
-    line-height: 135%;
-    padding: 4px 8px;
-    background: var(--code-bg);
-  }
-
-  .counter {
-    font-size: 16px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    color: var(--accent);
-    background: var(--accent-bg);
-    border: 2px solid transparent;
-    transition: border-color 0.3s;
-    margin-bottom: 24px;
-
-    &:hover {
-      border-color: var(--accent-border);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-  }
-
-  .hero {
-    position: relative;
-
-    .base,
-    .framework,
-    .vite {
-      inset-inline: 0;
-      margin: 0 auto;
-    }
-
-    .base {
-      width: 170px;
-      position: relative;
-      z-index: 0;
-    }
-
-    .framework,
-    .vite {
-      position: absolute;
-    }
-
-    .framework {
-      z-index: 1;
-      top: 34px;
-      height: 28px;
-      transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg) scale(1.4);
-    }
-
-    .vite {
-      z-index: 0;
-      top: 107px;
-      height: 26px;
-      width: auto;
-      transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg) scale(0.8);
-    }
-  }
-
-  #app {
-    width: 1126px;
-    max-width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    border-inline: 1px solid var(--border);
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
-
-  #center {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    place-content: center;
-    place-items: center;
-    flex-grow: 1;
-
-    @media (max-width: 1024px) {
-      padding: 32px 20px 24px;
-      gap: 18px;
-    }
-  }
-
-  #next-steps {
-    display: flex;
-    border-top: 1px solid var(--border);
-    text-align: left;
-
-    &>div {
-      flex: 1 1 0;
-      padding: 32px;
-
-      @media (max-width: 1024px) {
-        padding: 24px 20px;
-      }
-    }
-
-    .icon {
-      margin-bottom: 16px;
-      width: 22px;
-      height: 22px;
-    }
-
-    @media (max-width: 1024px) {
-      flex-direction: column;
-      text-align: center;
-    }
-  }
-
-  #docs {
-    border-right: 1px solid var(--border);
-
-    @media (max-width: 1024px) {
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-    }
-  }
-
-  #next-steps ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 8px;
-    margin: 32px 0 0;
-
-    .logo {
-      height: 18px;
-    }
-
-    a {
-      color: var(--text-h);
-      font-size: 16px;
-      border-radius: 6px;
-      background: var(--social-bg);
-      display: flex;
-      padding: 6px 12px;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      transition: box-shadow 0.3s;
-
-      &:hover {
-        box-shadow: var(--shadow);
-      }
-
-      .button-icon {
-        height: 18px;
-        width: 18px;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      margin-top: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-
-      li {
-        flex: 1 1 calc(50% - 8px);
-      }
-
-      a {
-        width: 100%;
-        justify-content: center;
-        box-sizing: border-box;
-      }
-    }
-  }
-
-  #spacer {
-    height: 88px;
-    border-top: 1px solid var(--border);
-
-    @media (max-width: 1024px) {
-      height: 48px;
-    }
-  }
-
-  .ticks {
-    position: relative;
-    width: 100%;
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      top: -4.5px;
-      border: 5px solid transparent;
-    }
-
-    &::before {
-      left: 0;
-      border-left-color: var(--border);
-    }
-
-    &::after {
-      right: 0;
-      border-right-color: var(--border);
-    }
-  }
+#app {
+  background-color: rgba(150, 150, 150, 0.3) !important;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}

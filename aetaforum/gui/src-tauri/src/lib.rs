@@ -5,7 +5,7 @@ mod hyperliquid;
 mod scanner;
 
 use tauri::Manager;
-use window_vibrancy::{apply_vibrancy, apply_blur, NSVisualEffectMaterial};
+use window_vibrancy::{apply_vibrancy, apply_mica, NSVisualEffectMaterial};
 
 #[tauri::command]
 fn close_window(app_handle: tauri::AppHandle) {
@@ -54,3 +54,5 @@ pub fn run() {
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
+
+
