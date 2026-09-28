@@ -1,5 +1,6 @@
 <script>
     import { invoke } from "@tauri-apps/api/core";
+    import Test from "./ui/test.svelte";
 
     let query = "BTC";
     let results = null;
@@ -22,6 +23,8 @@
 </script>
 
 <Header />
+
+<Test />
 
 <main>
     <div class="content">

@@ -17,10 +17,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-
   --text: #9ca3af;
   --text-h: #f3f4f6;
   --bg: #fdfdfdf0;
@@ -30,21 +26,14 @@
   --accent-bg: rgba(192, 132, 252, 0.15);
   --accent-border: rgba(192, 132, 252, 0.5);
   --social-bg: rgba(47, 48, 58, 0.5);
-  --shadow:rgba(0, 0, 0, 0.4) 0 10px 15px -3px,
-  rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px;
 
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
 }
 
-// toto
-앱의 기본 형태가 잡혔어. 창은 총 4개까지 가능해. 하지만 이중 설정창(설정 버튼 누를 시 나옴)은 항상 독립된 창 형태로 열려서 따로 만들어도 돼. 창은 헤더창,
-사이드창,
-메인창으로 나뉘어. 처음 앱을 실행하면 모든 창 안에 헤더,
-사이드바,
-멩니 섹션이 같이 있어. 참고로 이렇게 큰 창 안에서 헤더는 상하좌우에 드래그로 이동시켜서 붙이거나 사이드바와 메인섹션도 서로 좌우 드래그로 변경 가능해. 헤더창,
-사이드창,
-메인 창 각각 독립 분리,
-서로 1,
-2 구조로 분리 전부 가능해. 이때 헤더창이 혼자만 따로 분리된 경우 헤더창의 크기는 내부적으로 헤더 크기에 맞게 조정돼. 그리고 헤더는 세로모드와 가로 모드로 자유록게 변경 가능해(사이드바와 멩니 섹션과 합쳐져 있느 ㄴ상태일 경우 어디에 드래그되어 위치해있는지에 따라 상하일경우 자동으로 가로, 좌우일경우 자동으로 세로모드임). 창이 분리되어있더라도 각각 창이 전부 연결되어있어야해. 이 구조 가능할까?:root[data-theme="light"] {
+:root[data-theme="light"] {
   --bg-primary: #ffffff;
   --bg-secondary: #f4f4f5;
   --text-primary: #18181b;

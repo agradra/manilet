@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "백테스팅 프로그램"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 authors = [
     { name = "agradra" }
 ]

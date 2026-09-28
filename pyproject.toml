@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "nexus_app: 넥서스 에이전트 관리 앱\nnexuspy: 에이전트 설계용 SDK"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = []
 authors = [
     { name = "agradra" }
