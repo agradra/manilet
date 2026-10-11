@@ -1,0 +1,25 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <!-- 1. 아래쪽 용액 채우기 영역 (stroke 없음, fill 적용) -->
+  <path
+    d="M6.453 15h11.094l2.208 4.04A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96L6.453 15z"
+    fill="currentColor"
+    stroke="none"
+  />
+
+  <!-- 2. 플라스크 전체 외곽선 -->
+  <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
+  
+  <!-- 3. 수면 라인 및 상단 입구 -->
+  <path d="M6.453 15h11.094" />
+  <path d="M8.5 2h7" />
+</svg>

@@ -3,6 +3,7 @@ mod binance;
 mod bybit;
 mod hyperliquid;
 mod scanner;
+pub mod core;
 
 use tauri::Manager;
 use window_vibrancy::{apply_vibrancy, apply_mica, NSVisualEffectMaterial};
@@ -31,6 +32,25 @@ async fn search_futures(query: String, max_symbols: usize) -> Result<models::Sea
     Ok(scanner::search_futures(&query, max_symbols).await)
 }
 
+#[tauri::command]
+async fn open_settings_window(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(win) = app.get_webview_window("settings") {
+        let _ = win.show();
+        let _ = win.unminimize();
+        let _ = win.set_focus();
+        return Ok(());
+    }
+    tauri::WebviewWindowBuilder::new(&app, "settings", tauri::WebviewUrl::App("/".into()))
+        .title("Settings")
+        .inner_size(800.0, 600.0)
+        .decorations(false)
+        .transparent(true)
+        .center()
+        .build()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -50,7 +70,15 @@ pub fn run() {
       }
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![close_window, minimize_window, toggle_maximize_window, search_futures])
+    .invoke_handler(tauri::generate_handler![
+        close_window,
+        minimize_window,
+        toggle_maximize_window,
+        search_futures,
+        open_settings_window,
+        core::settings::load_settings,
+        core::settings::save_settings
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

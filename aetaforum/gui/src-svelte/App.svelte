@@ -1,13 +1,21 @@
 <script>
     import { invoke } from "@tauri-apps/api/core";
     import Test from "./ui/test.svelte";
+    import Header from "./layout/header/Header.svelte";
+    import SubHeader from "./layout/header/SubHeader.svelte";
+    import Settings from "./modals/Settings.svelte";
+    import Mac2 from "./layout/header/parts/window_control/Mac.svelte";
+
+    import Windows from "./layout/header/parts/window_control/Windows.svelte";
 
     let query = "BTC";
     let results = null;
     let loading = false;
     let error = null;
 
-    import Header from "./lib/Header.svelte";
+    import { getCurrentWindow } from "@tauri-apps/api/window";
+    import Footer from "./layout/footer/Footer.svelte";
+    const isSettingsWindow = getCurrentWindow().label === "settings";
 
     async function search() {
         loading = true;
@@ -24,79 +32,7 @@
 
 <Header />
 
-<Test />
-
-<main>
-    <div class="content">
-        <h2>Futures Scanner (100% Rust)</h2>
-        <div class="search-bar">
-            <input
-                type="text"
-                bind:value={query}
-                on:keydown={(e) => e.key === "Enter" && search()}
-                placeholder="Enter symbol (e.g. BTC)"
-            />
-            <button on:click={search} disabled={loading}>
-                {loading ? "Searching..." : "Search"}
-            </button>
-        </div>
-
-        {#if error}
-            <div class="error">Error: {error}</div>
-        {/if}
-
-        {#if results}
-            <div class="results">
-                <p>
-                    Found {results.summary.total} symbols ({results.summary
-                        .trading} trading).
-                </p>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Exchange</th>
-                                <th>Market</th>
-                                <th>Symbol</th>
-                                <th>Status</th>
-                                <th>First Candle</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each ["binance", "bybit", "hyperliquid"] as ex}
-                                {#if results.results[ex]}
-                                    {#each results.results[ex] as sym}
-                                        <tr>
-                                            <td>{sym.exchange}</td>
-                                            <td>{sym.market}</td>
-                                            <td
-                                                ><strong>{sym.symbol}</strong
-                                                ></td
-                                            >
-                                            <td
-                                                >{sym.is_trading
-                                                    ? "🟢 Trading"
-                                                    : "🔴 Closed"}</td
-                                            >
-                                            <td
-                                                >{sym.first_candle_time
-                                                    ? sym.first_candle_time.substring(
-                                                          0,
-                                                          10,
-                                                      )
-                                                    : "-"}</td
-                                            >
-                                        </tr>
-                                    {/each}
-                                {/if}
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        {/if}
-    </div>
-</main>
+<Footer />
 
 <style>
     main {
@@ -191,5 +127,29 @@
         background: rgba(255, 255, 255, 0.05);
         position: sticky;
         top: 0;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 32px; /* 헤더 아래부터 */
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 32px);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-window {
+        width: 80%;
+        height: 80%;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
     }
 </style>
