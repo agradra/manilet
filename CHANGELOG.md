@@ -12,6 +12,10 @@
 
 ---
 
+## [1.0.1] - 2026-10-13
+### Changed
+- nexus_app 앱 데이터 저장 경로 변경: `%(USER_DATA_DIR) \ nexus_app` → `%(USER_DATA_DIR) \ Manilet \ nexus_app`
+
 ## [1.0.0] - 2026-09-04
 ### Changed
 - **모노레포 패키지 분리**: 전체 프로젝트를 `manilet` 모노레포로 전환하고, 대시보드 앱(`nexus_app`)과 에이전트 전용 라이브러리(`nexuspy`)로 분리하여 관리를 용이하게 개선함.
